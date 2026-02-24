@@ -1,5 +1,5 @@
 
-The live deployment link : https://dose-wise-sable.vercel.app/login
+The live deployment link : https://dose-wise-6ntd1fszp-ashwins-projects-433a85b3.vercel.app?_vercel_share=FzdX7T4ukQck3aTYNVReYFl7o7J97coq
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

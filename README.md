@@ -1,5 +1,5 @@
-<<<<<<< HEAD
-# React + Vite
+
+The live deployment link : https://dose-wise-sable.vercel.app/login
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -18,4 +18,4 @@ If you are developing a production application, we recommend using TypeScript wi
 =======
 # Dose-wise
 DoseWise AI is a next-generation healthcare web app combining computer vision and intelligent adherence tracking to help users identify medications, prevent errors, and improve daily health routines through an elderly-friendly AI interface.
->>>>>>> bcdd26493ed0bdb16fc97f85f5500b62da37a7b9
+

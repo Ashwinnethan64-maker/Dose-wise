@@ -422,9 +422,11 @@ export default function Assistant() {
 
         let modelQuery = rawQuery;
         if (selectedLang === 'hi') {
-            modelQuery = `[Respond in Hindi (हिंदी)]: ${rawQuery}`;
+            modelQuery = `[Respond strictly in Hindi (हिंदी)]: ${rawQuery}`;
         } else if (selectedLang === 'kn') {
-            modelQuery = `[Respond in Kannada (ಕನ್ನಡ)]: ${rawQuery}`;
+            modelQuery = `[Respond strictly in Kannada (ಕನ್ನಡ)]: ${rawQuery}`;
+        } else {
+            modelQuery = `[Respond strictly in English]: ${rawQuery}`;
         }
 
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

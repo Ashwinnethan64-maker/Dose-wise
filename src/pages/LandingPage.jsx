@@ -10,9 +10,6 @@ export default function LandingPage() {
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold" style={{ color: 'var(--color-text)' }}>
           {t('appName')}
         </h1>
-        <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
-          {t('companionSub')}
-        </p>
         <div className="pt-6">
           <Link
             to="/login"

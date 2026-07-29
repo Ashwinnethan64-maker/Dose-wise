@@ -45,7 +45,7 @@ export default function Navbar() {
     }, []);
 
     const linkClass = ({ isActive }) =>
-        `relative flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-3 py-2 rounded-xl font-semibold text-xs xl:text-sm transition-all duration-200 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${isActive
+        `relative flex items-center gap-1 xl:gap-1.5 px-2 xl:px-3 py-2 rounded-xl font-semibold text-xs xl:text-sm transition-all duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${isActive
             ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-btn'
             : 'themed-text-muted hover:bg-primary-50/30 hover:text-primary-500'
         }`;
@@ -56,26 +56,26 @@ export default function Navbar() {
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 themed-navbar border-b" style={{ borderColor: 'var(--color-border)' }}>
             <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-                <div className="flex items-center justify-between h-16 gap-2">
-                    {/* Logo */}
-                    <NavLink to="/dashboard" className="flex items-center shrink-0 group focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-xl py-1 pr-1 sm:pr-2 min-h-[44px]">
+                <div className="flex items-center h-16 gap-2">
+                    {/* Logo - fixed left column */}
+                    <NavLink to="/dashboard" className="flex items-center shrink-0 group focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-xl py-1 pr-2 min-h-[44px]">
                         <DoseWiseLogo size="md" />
                     </NavLink>
 
-                    {/* Desktop nav (lg and above) - Flexible container with shrink-0 links */}
-                    <div className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 min-w-0 overflow-x-auto scrollbar-none py-1">
+                    {/* Desktop nav - middle column, takes all available space between logo and controls */}
+                    <div className="hidden lg:flex flex-1 min-w-0 items-center gap-0.5 xl:gap-1 py-1 px-1 xl:px-2 overflow-x-auto scrollbar-none">
                         {navItems.map(({ to, label, icon: Icon }) => (
                             <NavLink key={to} to={to} className={linkClass} end={to === '/dashboard'}>
                                 <Icon size={18} strokeWidth={2.2} className="shrink-0" />
-                                <span className="whitespace-nowrap truncate">{label}</span>
+                                <span className="whitespace-nowrap">{label}</span>
                             </NavLink>
                         ))}
                     </div>
 
-                    {/* Right side controls - ALWAYS visible and NEVER clipped */}
+                    {/* Right side controls - fixed right column, never shrinks */}
                     <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto lg:ml-0">
-                        {/* Encrypted Badge — forced light green, immune to dark mode */}
-                        <div className="hidden md:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border shadow-sm shrink-0 transition-all"
+                        {/* Encrypted Badge — forced light green, immune to dark mode — only show at xl to free space at lg */}
+                        <div className="hidden xl:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border shadow-sm shrink-0 transition-all"
                             style={{ background: '#d1fae5', color: '#065f46', borderColor: '#6ee7b7' }}>
                             <ShieldCheck size={15} className="shrink-0" style={{ color: '#059669' }} />
                             <span className="whitespace-nowrap">{t('encrypted')}</span>

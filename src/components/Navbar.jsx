@@ -74,9 +74,10 @@ export default function Navbar() {
 
                     {/* Right side controls - ALWAYS visible and NEVER clipped */}
                     <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto lg:ml-0">
-                        {/* Encrypted Badge (Vibrant & Crisp UI/UX) */}
-                        <div className="hidden md:flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/90 dark:bg-emerald-950/70 px-3 py-1.5 rounded-full border border-emerald-300/80 dark:border-emerald-600/50 shadow-sm backdrop-blur-md shrink-0 transition-all">
-                            <ShieldCheck size={15} className="shrink-0 text-emerald-500 dark:text-emerald-400" />
+                        {/* Encrypted Badge — forced light green, immune to dark mode */}
+                        <div className="hidden md:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border shadow-sm shrink-0 transition-all"
+                            style={{ background: '#d1fae5', color: '#065f46', borderColor: '#6ee7b7' }}>
+                            <ShieldCheck size={15} className="shrink-0" style={{ color: '#059669' }} />
                             <span className="whitespace-nowrap">{t('encrypted')}</span>
                         </div>
 

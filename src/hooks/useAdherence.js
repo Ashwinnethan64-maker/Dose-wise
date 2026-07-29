@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import useLocalStorage from './useLocalStorage';
+import { useLanguage } from '../context/LanguageContext';
 
 /**
  * useAdherence — Track daily medication adherence.
@@ -7,6 +8,7 @@ import useLocalStorage from './useLocalStorage';
  */
 export default function useAdherence() {
     const [logs, setLogs] = useLocalStorage('dosewise_adherence', []);
+    const { language, t } = useLanguage();
 
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
@@ -45,6 +47,9 @@ export default function useAdherence() {
     // Weekly data: last 7 days
     const weeklyData = useMemo(() => {
         const days = [];
+        const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        const locale = language === 'hi' ? 'hi-IN' : language === 'kn' ? 'kn-IN' : 'en-US';
+
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
@@ -52,16 +57,20 @@ export default function useAdherence() {
             const dayLogs = logs.filter((l) => l.date === dateStr);
             const taken = dayLogs.filter((l) => l.status === 'taken').length;
             const skipped = dayLogs.filter((l) => l.status === 'skipped').length;
+            const dayKey = dayKeys[d.getDay()];
+            const localizedDayName = t(dayKey) || d.toLocaleDateString(locale, { weekday: 'short' });
+
             days.push({
                 date: dateStr,
-                dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                dayName: localizedDayName,
+                dayKey,
                 taken,
                 skipped,
                 total: taken + skipped,
             });
         }
         return days;
-    }, [logs]);
+    }, [logs, language, t]);
 
     // Overall adherence percentage
     const adherencePercentage = useMemo(() => {

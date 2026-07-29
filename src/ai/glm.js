@@ -3,7 +3,7 @@
 export function getGLMConfig() {
     const apiKey = import.meta.env.VITE_GLM_API_KEY;
     const baseUrl = import.meta.env.VITE_GLM_BASE_URL || 'https://integrate.api.nvidia.com/v1';
-    const model = import.meta.env.VITE_GLM_MODEL || 'z-ai/glm-5.2';
+    const model = import.meta.env.VITE_GLM_MODEL || 'meta/llama-3.1-8b-instruct';
 
     if (!apiKey) {
         throw new Error('API_KEY_MISSING');

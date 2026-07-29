@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Pencil, Trash2, Clock, Repeat } from 'lucide-react';
 import IconButton from './ui/IconButton';
+import { useLanguage } from '../context/LanguageContext';
 
 const PILL_GLOW = {
     white: { bg: 'bg-gray-100', border: 'border-gray-300', glow: 'rgba(156,163,175,0.3)' },
@@ -14,6 +15,7 @@ const PILL_GLOW = {
 };
 
 export default function MedicationCard({ med, onEdit, onDelete, interactions = [] }) {
+    const { t } = useLanguage();
     const pill = PILL_GLOW[med.color?.toLowerCase()] || PILL_GLOW.white;
     const hasCritical = interactions.some((i) => i.severity === 'critical');
 
@@ -51,20 +53,20 @@ export default function MedicationCard({ med, onEdit, onDelete, interactions = [
                     <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                         {med.schedule && (
                             <span className="flex items-center gap-1 text-[11px] sm:text-xs bg-primary-50/80 text-primary-700 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-medium backdrop-blur-sm">
-                                <Clock size={11} className="shrink-0" /> {med.schedule}
+                                <Clock size={11} className="shrink-0" /> {t(med.schedule)}
                             </span>
                         )}
                         {med.frequency && (
                             <span className="flex items-center gap-1 text-[11px] sm:text-xs bg-blue-50/80 text-blue-700 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-medium backdrop-blur-sm">
-                                <Repeat size={11} className="shrink-0" /> {med.frequency}
+                                <Repeat size={11} className="shrink-0" /> {t(med.frequency)}
                             </span>
                         )}
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1 shrink-0">
-                    <IconButton icon={<Pencil size={16} />} onClick={() => onEdit?.(med)} label="Edit" variant="default" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center" />
-                    <IconButton icon={<Trash2 size={16} />} onClick={() => onDelete?.(med.id)} label="Delete" variant="danger" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center" />
+                    <IconButton icon={<Pencil size={16} />} onClick={() => onEdit?.(med)} label={t('editMedication')} variant="default" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center" />
+                    <IconButton icon={<Trash2 size={16} />} onClick={() => onDelete?.(med.id)} label={t('deleteMedication')} variant="danger" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center" />
                 </div>
             </div>
 

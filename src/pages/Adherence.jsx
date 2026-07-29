@@ -8,8 +8,10 @@ import AnimatedPage, { StaggerContainer, StaggerItem } from '../components/ui/An
 import GlassCard from '../components/ui/GlassCard';
 import SectionHeader from '../components/ui/SectionHeader';
 import StatusBadge from '../components/ui/StatusBadge';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Adherence() {
+    const { t } = useLanguage();
     const { medications } = useMedications();
     const { logDose, getStatusToday, weeklyData, adherencePercentage } = useAdherence();
     const { snooze } = useReminders(medications);
@@ -20,19 +22,19 @@ export default function Adherence() {
         status: getStatusToday(med.id),
     }));
 
-    const handleTaken = (med) => { logDose(med.id, 'taken'); addToast(`${med.name} marked as taken ✅`, 'success'); };
-    const handleSkipped = (med) => { logDose(med.id, 'skipped'); addToast(`${med.name} skipped`, 'warning'); };
-    const handleSnooze = (med) => { snooze(med.name); addToast(`${med.name} snoozed for 15 minutes`, 'info'); };
+    const handleTaken = (med) => { logDose(med.id, 'taken'); addToast(`${med.name} ${t('statusTaken')} ✅`, 'success'); };
+    const handleSkipped = (med) => { logDose(med.id, 'skipped'); addToast(`${med.name} ${t('statusSkipped')}`, 'warning'); };
+    const handleSnooze = (med) => { snooze(med.name); addToast(`${med.name} ${t('snoozedNotice')}`, 'info'); };
 
     return (
         <AnimatedPage className="space-y-6 sm:space-y-8">
             <div>
-                <h1 className="text-2xl sm:text-3xl font-bold themed-text">Daily Adherence</h1>
-                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">Track your medication intake for today</p>
+                <h1 className="text-2xl sm:text-3xl font-bold themed-text">{t('dailyAdherenceTitle')}</h1>
+                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">{t('dailyAdherenceSub')}</p>
             </div>
 
             <div>
-                <SectionHeader title="Today's Checklist" icon={<Clock size={22} />} className="mb-4" />
+                <SectionHeader title={t('todaysChecklist')} icon={<Clock size={22} />} className="mb-4" />
 
                 {todayMeds.length === 0 ? (
                     <GlassCard className="text-center py-10 sm:py-12 px-6">
@@ -41,7 +43,7 @@ export default function Adherence() {
                                 <Clock size={28} className="text-primary-400" />
                             </div>
                         </motion.div>
-                        <p className="text-sm sm:text-base themed-text-muted">No medications to track. Add medications first.</p>
+                        <p className="text-sm sm:text-base themed-text-muted">{t('noMedsToTrack')}</p>
                     </GlassCard>
                 ) : (
                     <StaggerContainer className="space-y-3 sm:space-y-4">
@@ -58,7 +60,9 @@ export default function Adherence() {
                                                 }`}>💊</div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-base sm:text-lg font-bold themed-text truncate">{med.name}</p>
-                                                <p className="text-xs sm:text-sm themed-text-muted mt-0.5 truncate">{med.dosage} · {med.schedule} · {med.frequency}</p>
+                                                <p className="text-xs sm:text-sm themed-text-muted mt-0.5 truncate">
+                                                    {med.dosage}{med.schedule ? ` · ${t(med.schedule)}` : ''}{med.frequency ? ` · ${t(med.frequency)}` : ''}
+                                                </p>
                                             </div>
                                         </div>
 
@@ -67,15 +71,15 @@ export default function Adherence() {
                                                 <motion.div key="actions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }} className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 pt-1 sm:pt-0">
                                                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={() => handleTaken(med)}
                                                         className="h-11 sm:h-10 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 shrink-0 min-w-[44px]">
-                                                        <Check size={16} /> Taken
+                                                        <Check size={16} /> {t('takenBtn')}
                                                     </motion.button>
                                                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={() => handleSkipped(med)}
                                                         className="h-11 sm:h-10 px-4 bg-gradient-to-r from-amber-400 to-amber-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 shrink-0 min-w-[44px]">
-                                                        <SkipForward size={16} /> Skipped
+                                                        <SkipForward size={16} /> {t('skippedBtn')}
                                                     </motion.button>
                                                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={() => handleSnooze(med)}
                                                         className="h-11 sm:h-10 px-3.5 bg-primary-50 hover:bg-primary-100 text-primary-600 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0 min-w-[44px]" title="Snooze 15 min">
-                                                        <Bell size={15} /> Snooze
+                                                        <Bell size={15} /> {t('snoozeBtn')}
                                                     </motion.button>
                                                 </motion.div>
                                             ) : (
@@ -97,7 +101,7 @@ export default function Adherence() {
 
             {/* Weekly Calendar View */}
             <div>
-                <SectionHeader title="Weekly Calendar" icon={<Calendar size={22} />} className="mb-4" />
+                <SectionHeader title={t('weeklyCalendar')} icon={<Calendar size={22} />} className="mb-4" />
                 <GlassCard padding="p-4 sm:p-6" className="overflow-x-auto">
                     <div className="grid grid-cols-7 gap-1.5 sm:gap-4 min-w-[280px]">
                         {weeklyData.map((day) => {
@@ -123,10 +127,10 @@ export default function Adherence() {
 
                     <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
                         {[
-                            { color: 'bg-green-100 text-green-700 border-green-200', label: '80%+' },
-                            { color: 'bg-amber-100 text-amber-700 border-amber-200', label: '50-79%' },
-                            { color: 'bg-red-100 text-red-700 border-red-200', label: '<50%' },
-                            { color: 'bg-gray-100 text-gray-500 border-gray-200', label: 'No data' },
+                            { color: 'bg-green-100 text-green-700 border-green-200', label: t('legendHigh') },
+                            { color: 'bg-amber-100 text-amber-700 border-amber-200', label: t('legendMid') },
+                            { color: 'bg-red-100 text-red-700 border-red-200', label: t('legendLow') },
+                            { color: 'bg-gray-100 text-gray-500 border-gray-200', label: t('legendNoData') },
                         ].map(({ color, label }) => (
                             <span key={label} className={`text-xs font-semibold px-3 py-1 rounded-full border ${color}`}>{label}</span>
                         ))}
@@ -136,7 +140,7 @@ export default function Adherence() {
 
             {/* Overall */}
             <GlassCard glow padding="p-6 sm:p-8" className="text-center">
-                <p className="text-xs sm:text-sm themed-text-muted font-semibold uppercase tracking-wider mb-2">Overall Adherence Rate</p>
+                <p className="text-xs sm:text-sm themed-text-muted font-semibold uppercase tracking-wider mb-2">{t('overallAdherenceRate')}</p>
                 <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                     className={`text-4xl sm:text-5xl font-extrabold ${adherencePercentage >= 80 ? 'text-medical-safe' : adherencePercentage >= 50 ? 'text-medical-warn' : 'text-medical-danger'}`}>
                     {adherencePercentage}%

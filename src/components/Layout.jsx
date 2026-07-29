@@ -1,10 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import { useLanguage } from '../context/LanguageContext';
 
 /**
- * Layout — Main app shell. Uses CSS vars for theme-aware background.
+ * Layout — Main app shell. Uses CSS vars for theme-aware background and localized footer.
  */
 export default function Layout() {
+    const { t } = useLanguage();
+
     return (
         <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
             <Navbar />
@@ -21,9 +24,9 @@ export default function Layout() {
                 <Outlet />
             </main>
 
-            {/* Footer */}
+            {/* Localized Footer */}
             <footer className="text-center py-5 sm:py-6 px-4 text-xs themed-text-muted backdrop-blur-sm border-t" style={{ borderColor: 'var(--color-border)' }}>
-                DoseWise AI — Your Health Data Stays Private 🔒
+                {t('footerText')}
             </footer>
         </div>
     );

@@ -36,28 +36,37 @@ export async function sendMessageToGLM(historyMessages, prompt, onChunk) {
         content: prompt
     });
 
-    let url = `${baseUrl.replace(/\/+$/, '')}/chat/completions`;
-    // If running in browser dev/prod environment and target matches nvidia domain, use Vite proxy to prevent CORS fetch errors
-    if (typeof window !== 'undefined' && url.includes('integrate.api.nvidia.com')) {
-        url = '/api/nvidia/chat/completions';
-    }
+    let url = '/api/nvidia/chat/completions';
+    const requestPayload = {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            model,
+            messages,
+            stream: true,
+            temperature: 0.5,
+            max_tokens: 512
+        })
+    };
 
     try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                model,
-                messages,
-                stream: false,
-                temperature: 0.5,
-                max_tokens: 512
-            })
-        });
+        let response;
+        try {
+            response = await fetch(url, requestPayload);
+        } catch (fetchErr) {
+            // Fallback to direct endpoint if relative proxy is not accessible
+            const directUrl = `${baseUrl.replace(/\/+$/, '')}/chat/completions`;
+            if (url !== directUrl) {
+                url = directUrl;
+                response = await fetch(url, requestPayload);
+            } else {
+                throw fetchErr;
+            }
+        }
 
         if (!response.ok) {
             const errText = await response.text();

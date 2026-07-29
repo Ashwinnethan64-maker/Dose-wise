@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/auth';
 import { useToast } from '../components/ui/Toast';
@@ -7,11 +7,12 @@ import { ShieldCheck, Heart, ArrowRight, X, Mail } from 'lucide-react';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import { useTheme } from '../utils/theme';
-
-
+import { useLanguage } from '../context/LanguageContext';
+import DoseWiseLogo from '../components/DoseWiseLogo';
 
 /* ─── Forgot Password Modal ───────────────────────────────── */
 function ForgotPasswordModal({ isOpen, onClose }) {
+    const { t } = useLanguage();
     const [resetEmail, setResetEmail] = useState('');
     const [sent, setSent] = useState(false);
     const { addToast } = useToast();
@@ -22,7 +23,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
         e.preventDefault();
         if (!resetEmail.trim()) return;
         setSent(true);
-        addToast('Password reset link sent (Demo)', 'success');
+        addToast(t('checkInbox'), 'success');
         setTimeout(() => { onClose(); setSent(false); setResetEmail(''); }, 2000);
     };
 
@@ -56,16 +57,16 @@ function ForgotPasswordModal({ isOpen, onClose }) {
                     <Mail size={26} className="text-primary-500" />
                 </div>
 
-                <h3 className="text-base font-bold themed-text text-center mb-1.5">Reset Password</h3>
+                <h3 className="text-base font-bold themed-text text-center mb-1.5">{t('resetPasswordTitle')}</h3>
                 <p className="text-sm themed-text-muted text-center mb-5 leading-relaxed">
-                    Enter your email and we'll send you a reset link.
+                    {t('resetPasswordSub')}
                 </p>
 
                 {sent ? (
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center py-4">
                         <div className="text-3xl mb-2">📧</div>
-                        <p className="text-sm text-primary-500 font-semibold">Check your inbox!</p>
-                        <p className="text-xs themed-text-muted mt-1">Reset link sent to {resetEmail}</p>
+                        <p className="text-sm text-primary-500 font-semibold">{t('checkInbox')}</p>
+                        <p className="text-xs themed-text-muted mt-1">{t('resetLinkSentTo', { email: resetEmail })}</p>
                     </motion.div>
                 ) : (
                     <form onSubmit={handleReset} className="space-y-4">
@@ -76,7 +77,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
                             className="w-full px-4 py-3 rounded-xl themed-input outline-none text-sm"
                         />
                         <PrimaryButton type="submit" size="md" className="w-full">
-                            Send Reset Link
+                            {t('sendResetLink')}
                         </PrimaryButton>
                     </form>
                 )}
@@ -86,9 +87,8 @@ function ForgotPasswordModal({ isOpen, onClose }) {
 }
 
 /* ─── Login Page ──────────────────────────────────────────── */
-import DoseWiseLogo from '../components/DoseWiseLogo';
-
 export default function Login() {
+    const { t } = useLanguage();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -100,26 +100,22 @@ export default function Login() {
     const navigate = useNavigate();
 
     const handleGoogleResponse = useCallback((userData) => {
-        // Here we bypass manual JWT processing if we want to hook it into our useAuth, 
-        // however we just assume success based on the payload GoogleAuth provided.
-        // We simulate a loginWithGoogle logic bypass or just set the user straight away
-        // if your AuthContext supports it.
-        const success = loginWithGoogle(userData); // Ideally auth context should handle object payload
+        const success = loginWithGoogle(userData);
         if (success) {
-            addToast('Welcome back! 🎉', 'success');
+            addToast(t('googleSignInSuccess'), 'success');
             navigate('/dashboard');
         } else {
-            addToast('Failed to sign in with Google', 'error');
+            addToast(t('googleSignInFail'), 'error');
         }
-    }, [loginWithGoogle, navigate, addToast]);
+    }, [loginWithGoogle, navigate, addToast, t]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');
-        if (!email.trim() || !password.trim()) { setError('Please fill in all fields'); return; }
+        if (!email.trim() || !password.trim()) { setError(t('fillAllFields')); return; }
         const success = login(email, password);
-        if (success) { addToast('Welcome back! 👋', 'success'); navigate('/'); }
-        else setError('Invalid credentials');
+        if (success) { addToast(t('signInSuccess'), 'success'); navigate('/'); }
+        else setError(t('invalidCredentials'));
     };
 
     return (
@@ -134,7 +130,7 @@ export default function Login() {
                 {/* Logo */}
                 <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-6 flex flex-col items-center">
                     <DoseWiseLogo size="lg" className="justify-center mb-2" />
-                    <p className="text-sm themed-text-muted mt-1 font-medium">Your AI-Powered Medication Companion</p>
+                    <p className="text-sm themed-text-muted mt-1 font-medium">{t('companionSub')}</p>
                 </motion.div>
 
                 {/* Card */}
@@ -144,7 +140,7 @@ export default function Login() {
                     transition={{ duration: 0.4, delay: 0.1 }}
                     className="rounded-2xl p-6 sm:p-8 border themed-modal shadow-xl"
                 >
-                    <h2 className="text-xl font-bold themed-text mb-5 text-center">Welcome Back</h2>
+                    <h2 className="text-xl font-bold themed-text mb-5 text-center">{t('welcomeBack')}</h2>
 
                     {/* Google Sign-In */}
                     <GoogleLoginButton />
@@ -152,13 +148,13 @@ export default function Login() {
                     {/* Divider */}
                     <div className="flex items-center gap-3 my-5">
                         <div className="flex-1 h-px" style={{ background: 'var(--color-border-input)' }} />
-                        <span className="text-xs themed-text-muted font-semibold uppercase tracking-wider">or sign in with email</span>
+                        <span className="text-xs themed-text-muted font-semibold uppercase tracking-wider">{t('signInWithEmail')}</span>
                         <div className="flex-1 h-px" style={{ background: 'var(--color-border-input)' }} />
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="relative">
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Email</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('emailLabel')}</label>
                             <motion.div animate={focused === 'email' ? { scale: 1.002 } : { scale: 1 }}>
                                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                                     onFocus={() => setFocused('email')} onBlur={() => setFocused(null)}
@@ -171,10 +167,10 @@ export default function Login() {
 
                         <div className="relative">
                             <div className="flex items-center justify-between mb-1.5">
-                                <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted">Password</label>
+                                <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted">{t('passwordLabel')}</label>
                                 <button type="button" onClick={() => setForgotOpen(true)}
                                     className="text-xs text-primary-500 hover:text-primary-700 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-primary-500 rounded">
-                                    Forgot password?
+                                    {t('forgotPassword')}
                                 </button>
                             </div>
                             <motion.div animate={focused === 'password' ? { scale: 1.002 } : { scale: 1 }}>
@@ -196,19 +192,19 @@ export default function Login() {
 
                         <motion.button type="submit" whileHover={{ y: -1, scale: 1.01 }} whileTap={{ y: 0, scale: 0.98 }}
                             className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-sm py-3 rounded-xl shadow-btn hover:shadow-btn-hover transition-all duration-200 flex items-center justify-center gap-2 mt-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
-                            Sign In <ArrowRight size={18} />
+                            {t('signInBtn')} <ArrowRight size={18} />
                         </motion.button>
                     </form>
 
                     <div className="flex items-center justify-center gap-2 mt-6 text-[11px] text-medical-safe font-semibold">
                         <ShieldCheck size={14} />
-                        <span>Encrypted & Private — Your data stays on this device</span>
+                        <span>{t('encryptedHint')}</span>
                     </div>
                 </motion.div>
 
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
                     className="text-center text-xs themed-text-muted mt-6 flex items-center justify-center gap-1">
-                    Made with <Heart size={12} className="text-medical-danger" /> for better health
+                    {t('madeWithLove')}
                 </motion.p>
             </div>
 

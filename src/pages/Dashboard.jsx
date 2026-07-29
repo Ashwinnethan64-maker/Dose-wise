@@ -5,6 +5,7 @@ import useMedications from '../hooks/useMedications';
 import useAdherence from '../hooks/useAdherence';
 import { useAuth } from '../hooks/useAuth';
 import useProfile from '../hooks/useProfile';
+import { useLanguage } from '../context/LanguageContext';
 import AdherenceRing from '../components/AdherenceRing';
 import AnimatedPage, { StaggerContainer, StaggerItem } from '../components/ui/AnimatedPage';
 import MetricCard from '../components/ui/MetricCard';
@@ -18,6 +19,7 @@ export default function Dashboard() {
     const { medications } = useMedications();
     const { adherencePercentage, missedToday, getStatusToday, weeklyData } = useAdherence();
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     const todayMeds = medications.map((med) => ({
         ...med,
@@ -27,7 +29,7 @@ export default function Dashboard() {
     const hour = new Date().getHours();
     const rawName = profile?.displayName || user?.name || (user?.email ? user.email.split('@')[0] : '');
     const firstName = rawName ? rawName.trim().split(' ')[0] : '';
-    const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
+    const greeting = hour < 12 ? t('goodMorning') : hour < 18 ? t('goodAfternoon') : t('goodEvening');
 
     return (
         <AnimatedPage className="space-y-6 sm:space-y-8">
@@ -37,7 +39,7 @@ export default function Dashboard() {
                     {greeting}{firstName ? `, ${firstName}` : ''} <motion.span animate={{ rotate: [0, 14, -8, 14, 0] }} transition={{ duration: 1.5, delay: 0.3 }}>👋</motion.span>
                 </h1>
                 <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">
-                    Here's your health overview for today
+                    {t('dashboardSubtitle')}
                 </p>
             </div>
 
@@ -46,8 +48,8 @@ export default function Dashboard() {
                 {/* Adherence Ring */}
                 <StaggerItem className="h-full">
                     <GlassCard hover glow padding="p-4 sm:p-6" className="flex flex-col items-center justify-between cursor-pointer h-full min-h-[150px] sm:min-h-[170px]" onClick={() => navigate('/adherence')}>
-                        <AdherenceRing percentage={adherencePercentage} size={88} label="Adherence" />
-                        <p className="text-[11px] sm:text-xs themed-text-muted mt-2.5 sm:mt-3 font-semibold uppercase tracking-wider">Overall Score</p>
+                        <AdherenceRing percentage={adherencePercentage} size={88} label={t('adherence')} />
+                        <p className="text-[11px] sm:text-xs themed-text-muted mt-2.5 sm:mt-3 font-semibold uppercase tracking-wider">{t('overallScore')}</p>
                     </GlassCard>
                 </StaggerItem>
 
@@ -65,21 +67,21 @@ export default function Dashboard() {
                         <ScanLine size={34} className="opacity-90 sm:w-[38px] sm:h-[38px]" />
                         <div>
                             <h3 className="text-base font-bold flex items-center gap-1.5">
-                                Scan Pill <Sparkles size={14} className="opacity-80" />
+                                {t('scanPill')} <Sparkles size={14} className="opacity-80" />
                             </h3>
-                            <p className="text-xs opacity-80 mt-0.5 sm:mt-1">Identify with AI camera</p>
+                            <p className="text-xs opacity-80 mt-0.5 sm:mt-1">{t('scanSub')}</p>
                         </div>
                     </motion.button>
                 </StaggerItem>
 
                 {/* Pending Meds */}
                 <StaggerItem className="h-full">
-                    <MetricCard icon={<Pill size={22} />} value={pendingCount} label="Pending Today" color="teal" onClick={() => navigate('/adherence')} className="h-full min-h-[150px] sm:min-h-[170px] flex flex-col justify-between p-4 sm:p-6" />
+                    <MetricCard icon={<Pill size={22} />} value={pendingCount} label={t('pendingToday')} color="teal" onClick={() => navigate('/adherence')} className="h-full min-h-[150px] sm:min-h-[170px] flex flex-col justify-between p-4 sm:p-6" />
                 </StaggerItem>
 
                 {/* Missed Alerts */}
                 <StaggerItem className="h-full">
-                    <MetricCard icon={<AlertTriangle size={22} />} value={missedToday.length} label="Missed Today"
+                    <MetricCard icon={<AlertTriangle size={22} />} value={missedToday.length} label={t('missedToday')}
                         color={missedToday.length > 0 ? 'red' : 'teal'} onClick={() => navigate('/adherence')} className="h-full min-h-[150px] sm:min-h-[170px] flex flex-col justify-between p-4 sm:p-6" />
                 </StaggerItem>
             </StaggerContainer>
@@ -87,12 +89,12 @@ export default function Dashboard() {
             {/* Today's Medications */}
             <div>
                 <SectionHeader
-                    title="Today's Medications"
+                    title={t('todaysMedications')}
                     icon={<Pill size={22} />}
                     action={
                         <motion.button whileHover={{ x: 3 }} onClick={() => navigate('/medications')}
                             className="text-sm text-primary-500 hover:text-primary-700 font-semibold transition-colors flex items-center gap-1.5 min-h-[44px] px-2">
-                            View All <ArrowRight size={15} />
+                            {t('viewAll')} <ArrowRight size={15} />
                         </motion.button>
                     }
                     className="mb-3.5 sm:mb-4"
@@ -103,12 +105,12 @@ export default function Dashboard() {
                         <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
                             <Pill size={38} className="text-primary-300 mx-auto mb-3" />
                         </motion.div>
-                        <p className="text-sm sm:text-base themed-text-muted mb-1 font-semibold">No medications added yet</p>
-                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mb-5">Start by adding your first medication</p>
+                        <p className="text-sm sm:text-base themed-text-muted mb-1 font-semibold">{t('noMedsYet')}</p>
+                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mb-5">{t('addFirstMed')}</p>
                         <motion.button whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.97 }}
                             onClick={() => navigate('/medications')}
                             className="bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold text-xs sm:text-sm py-3 px-5 rounded-xl transition-colors min-h-[44px] flex items-center justify-center">
-                            ➕ Add Your First Medication
+                            {t('addFirstMed')}
                         </motion.button>
                     </GlassCard>
                 ) : (
@@ -128,7 +130,9 @@ export default function Dashboard() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm sm:text-base font-bold themed-text truncate">{med.name}</p>
-                                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mt-0.5 truncate">{med.dosage} · {med.schedule}</p>
+                                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mt-0.5 truncate">
+                                            {med.dosage}{med.schedule ? ` · ${t(med.schedule)}` : ''}
+                                        </p>
                                     </div>
                                     <StatusBadge status={med.status || 'pending'} />
                                 </GlassCard>
@@ -140,7 +144,7 @@ export default function Dashboard() {
 
             {/* Weekly Overview */}
             <div>
-                <SectionHeader title="Weekly Overview" icon={<Calendar size={22} className="sm:w-[26px] sm:h-[26px]" />} className="mb-3.5 sm:mb-4" />
+                <SectionHeader title={t('weeklyOverview')} icon={<Calendar size={22} className="sm:w-[26px] sm:h-[26px]" />} className="mb-3.5 sm:mb-4" />
                 <GlassCard padding="p-4 sm:p-7" className="overflow-x-auto">
                     <div className="grid grid-cols-7 gap-1.5 sm:gap-4 min-w-[280px]">
                         {weeklyData.map((day) => {

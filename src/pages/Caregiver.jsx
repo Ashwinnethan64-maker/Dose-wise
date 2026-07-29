@@ -7,6 +7,7 @@ import AdherenceRing from '../components/AdherenceRing';
 import AnimatedPage, { StaggerContainer, StaggerItem } from '../components/ui/AnimatedPage';
 import GlassCard from '../components/ui/GlassCard';
 import SectionHeader from '../components/ui/SectionHeader';
+import { useLanguage } from '../context/LanguageContext';
 
 function useAnimatedCounter(target, duration = 800) {
     const [count, setCount] = useState(0);
@@ -24,6 +25,7 @@ function useAnimatedCounter(target, duration = 800) {
 }
 
 export default function Caregiver() {
+    const { t } = useLanguage();
     const { medications } = useMedications();
     const { adherencePercentage, missedToday, weeklyData, logs } = useAdherence();
 
@@ -53,17 +55,17 @@ export default function Caregiver() {
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shrink-0 shadow-btn">
                         <Users size={20} className="text-white" />
                     </div>
-                    Caregiver Dashboard
+                    {t('caregiverTitle')}
                 </h1>
-                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">Monitor medication adherence and missed doses</p>
+                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">{t('caregiverSub')}</p>
             </div>
 
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6">
                 <StaggerItem className="h-full">
                     <GlassCard glow padding="p-5 sm:p-7" className="flex flex-col items-center justify-center h-full text-center min-h-[170px] sm:min-h-[200px]">
-                        <AdherenceRing percentage={adherencePercentage} size={92} label="Overall" />
+                        <AdherenceRing percentage={adherencePercentage} size={92} label={t('overall')} />
                         <div className="flex items-center gap-1.5 mt-3">
-                            <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider">Adherence Rate</p>
+                            <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider">{t('adherenceRate')}</p>
                             <TrendIcon size={14} className={trendColor} />
                         </div>
                     </GlassCard>
@@ -77,12 +79,12 @@ export default function Caregiver() {
                         <motion.p key={animatedMissed} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-2xl sm:text-3xl font-bold themed-text">
                             {animatedMissed}
                         </motion.p>
-                        <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">Missed Today</p>
+                        <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">{t('missedToday')}</p>
                         {missedToday.length > 0 && (
                             <div className="mt-2.5 space-y-1">
                                 {missedToday.map((m) => {
                                     const med = medications.find((md) => md.id === m.medicationId);
-                                    return <span key={m.id} className="block text-xs bg-red-50 text-red-700 border border-red-200 rounded-full px-3 py-0.5 font-medium truncate">{med?.name || 'Unknown'}</span>;
+                                    return <span key={m.id} className="block text-xs bg-red-50 text-red-700 border border-red-200 rounded-full px-3 py-0.5 font-medium truncate">{med?.name || t('unknownMed')}</span>;
                                 })}
                             </div>
                         )}
@@ -95,13 +97,13 @@ export default function Caregiver() {
                             <TrendingUp size={20} className="text-teal-700 dark:text-teal-200" />
                         </div>
                         <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-2xl sm:text-3xl font-bold themed-text">{animatedMedCount}</motion.p>
-                        <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">Medications Tracked</p>
+                        <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">{t('medsTrackedLabel')}</p>
                     </GlassCard>
                 </StaggerItem>
             </StaggerContainer>
 
             <div>
-                <SectionHeader title="Weekly Report Card" icon={<Calendar size={22} />} className="mb-3.5 sm:mb-4" />
+                <SectionHeader title={t('weeklyReportCard')} icon={<Calendar size={22} />} className="mb-3.5 sm:mb-4" />
                 <GlassCard padding="p-4 sm:p-6" className="overflow-x-auto">
                     <div className="grid grid-cols-7 gap-1.5 sm:gap-4 min-w-[280px]">
                         {weeklyData.map((day) => {
@@ -126,10 +128,10 @@ export default function Caregiver() {
             </div>
 
             <div>
-                <SectionHeader title="Per-Medication Breakdown" className="mb-3.5 sm:mb-4" />
+                <SectionHeader title={t('perMedBreakdown')} className="mb-3.5 sm:mb-4" />
                 {medBreakdown.length === 0 ? (
                     <GlassCard className="text-center py-8">
-                        <p className="themed-text-muted">No medications being tracked.</p>
+                        <p className="themed-text-muted">{t('noMedsTrackedCaregiver')}</p>
                     </GlassCard>
                 ) : (
                     <StaggerContainer className="space-y-2.5 sm:space-y-3">
@@ -140,7 +142,7 @@ export default function Caregiver() {
                                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl shrink-0" style={{ background: 'var(--color-badge-bg)' }}>💊</div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm sm:text-base font-bold themed-text truncate">{med.name}</p>
-                                            <p className="text-xs sm:text-sm themed-text-muted mt-0.5 truncate">{med.taken} taken / {med.total} total</p>
+                                            <p className="text-xs sm:text-sm themed-text-muted mt-0.5 truncate">{t('takenOfTotal', { taken: med.taken, total: med.total })}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">

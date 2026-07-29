@@ -6,12 +6,14 @@ import MedicationCard from '../components/MedicationCard';
 import MedicationModal from '../components/MedicationModal';
 import { checkAllInteractions } from '../utils/drugInteraction';
 import { useToast } from '../components/ui/Toast';
-import AnimatedPage, { StaggerContainer, StaggerItem } from '../components/ui/AnimatedPage';
+import AnimatedPage from '../components/ui/AnimatedPage';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import SectionHeader from '../components/ui/SectionHeader';
 import ConfirmModal from '../components/ui/ConfirmModal';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Medications() {
+    const { t } = useLanguage();
     const { medications, addMedication, updateMedication, deleteMedication } = useMedications();
     const [modalOpen, setModalOpen] = useState(false);
     const [editingMed, setEditingMed] = useState(null);
@@ -19,26 +21,28 @@ export default function Medications() {
     const { addToast } = useToast();
 
     const handleSave = (data) => {
-        if (editingMed) { updateMedication(editingMed.id, data); addToast('Medication updated successfully', 'success'); }
-        else { addMedication(data); addToast('Medication added successfully', 'success'); }
+        if (editingMed) { updateMedication(editingMed.id, data); addToast(t('medUpdatedSuccess'), 'success'); }
+        else { addMedication(data); addToast(t('medAddedSuccess'), 'success'); }
         setEditingMed(null);
     };
 
     const handleEdit = (med) => { setEditingMed(med); setModalOpen(true); };
     const handleAdd = () => { setEditingMed(null); setModalOpen(true); };
     const handleDeleteRequest = (id) => { const med = medications.find((m) => m.id === id); setDeleteTarget(med || { id }); };
-    const handleDeleteConfirm = () => { if (deleteTarget) { deleteMedication(deleteTarget.id); addToast(`${deleteTarget.name || 'Medication'} removed`, 'info'); setDeleteTarget(null); } };
+    const handleDeleteConfirm = () => { if (deleteTarget) { deleteMedication(deleteTarget.id); addToast(`${deleteTarget.name || 'Medication'} ${t('medRemovedInfo')}`, 'info'); setDeleteTarget(null); } };
+
+    const trackedText = medications.length === 1 ? t('medsTracked') : t('medsTrackedPlural');
 
     return (
         <AnimatedPage className="space-y-6 sm:space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <SectionHeader
-                    title="My Medications"
-                    subtitle={`${medications.length} medication${medications.length !== 1 ? 's' : ''} tracked`}
+                    title={t('myMedsTitle')}
+                    subtitle={`${medications.length} ${trackedText}`}
                     icon={<Pill size={24} />}
                 />
                 <div className="shrink-0">
-                    <PrimaryButton onClick={handleAdd} icon={<Plus size={20} />}>Add Medication</PrimaryButton>
+                    <PrimaryButton onClick={handleAdd} icon={<Plus size={20} />}>{t('addMedication')}</PrimaryButton>
                 </div>
             </div>
 
@@ -50,11 +54,11 @@ export default function Medications() {
                             <Pill size={36} className="text-primary-400" />
                         </div>
                     </motion.div>
-                    <h3 className="text-lg sm:text-xl font-bold themed-text mb-2">No Medications Yet</h3>
+                    <h3 className="text-lg sm:text-xl font-bold themed-text mb-2">{t('noMedsTitle')}</h3>
                     <p className="text-sm sm:text-base themed-text-muted mb-6 max-w-sm mx-auto leading-relaxed">
-                        Add your medications to start tracking doses, get reminders, and check drug interactions.
+                        {t('noMedsSub')}
                     </p>
-                    <PrimaryButton onClick={handleAdd} icon={<Plus size={18} />} size="md">Add Your First Medication</PrimaryButton>
+                    <PrimaryButton onClick={handleAdd} icon={<Plus size={18} />} size="md">{t('addFirstMedBtn')}</PrimaryButton>
                 </motion.div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -76,9 +80,9 @@ export default function Medications() {
 
             <AnimatePresence>
                 <ConfirmModal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDeleteConfirm}
-                    title="Remove Medication?"
-                    message={`Are you sure you want to remove "${deleteTarget?.name || 'this medication'}"? This action cannot be undone.`}
-                    confirmLabel="Remove" variant="danger" />
+                    title={t('removeMedTitle')}
+                    message={t('removeMedConfirm', { name: deleteTarget?.name || t('unknownMed') })}
+                    confirmLabel={t('confirmRemove')} cancelLabel={t('cancel')} variant="danger" />
             </AnimatePresence>
         </AnimatedPage>
     );

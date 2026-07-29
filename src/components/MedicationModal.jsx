@@ -1,25 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X, Camera, Trash2, Check, FileText, File as FileIcon } from 'lucide-react';
 import PrimaryButton from './ui/PrimaryButton';
+import { useLanguage } from '../context/LanguageContext';
 
-/* ─── Pill Color Palette ──────────────────────────────────── */
-const PILL_COLORS = [
-    { name: 'white', hex: '#e5e7eb', ring: 'ring-gray-400' },
-    { name: 'blue', hex: '#60a5fa', ring: 'ring-blue-400' },
-    { name: 'red', hex: '#f87171', ring: 'ring-red-400' },
-    { name: 'yellow', hex: '#fbbf24', ring: 'ring-yellow-400' },
-    { name: 'green', hex: '#4ade80', ring: 'ring-green-400' },
-    { name: 'orange', hex: '#fb923c', ring: 'ring-orange-400' },
-    { name: 'pink', hex: '#f472b6', ring: 'ring-pink-400' },
-    { name: 'purple', hex: '#a78bfa', ring: 'ring-purple-400' },
-];
-
-/**
- * MedicationModal — Add / Edit medication with pill color selector and multi-type file upload.
- */
 export default function MedicationModal({ isOpen, onClose, onSave, medication = null }) {
+    const { t } = useLanguage();
     const isEditing = !!medication;
+
+    const PILL_COLORS = [
+        { name: 'white', key: 'colorWhite', hex: '#e5e7eb', ring: 'ring-gray-400' },
+        { name: 'blue', key: 'colorBlue', hex: '#60a5fa', ring: 'ring-blue-400' },
+        { name: 'red', key: 'colorRed', hex: '#f87171', ring: 'ring-red-400' },
+        { name: 'yellow', key: 'colorYellow', hex: '#fbbf24', ring: 'ring-yellow-400' },
+        { name: 'green', key: 'colorGreen', hex: '#4ade80', ring: 'ring-green-400' },
+        { name: 'orange', key: 'colorOrange', hex: '#fb923c', ring: 'ring-orange-400' },
+        { name: 'pink', key: 'colorPink', hex: '#f472b6', ring: 'ring-pink-400' },
+        { name: 'purple', key: 'colorPurple', hex: '#a78bfa', ring: 'ring-purple-400' },
+    ];
+
     const [form, setForm] = useState({
         name: '', dosage: '', frequency: 'Once daily', schedule: 'Morning', notes: '', image: null, color: 'white',
         fileName: '', fileType: ''
@@ -119,7 +118,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
             >
                 {/* Header */}
                 <div className="px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between border-b shrink-0" style={{ borderColor: 'var(--color-border)' }}>
-                    <h2 className="text-base font-bold themed-text">{isEditing ? 'Edit Medication' : 'Add Medication'}</h2>
+                    <h2 className="text-base font-bold themed-text">{isEditing ? t('editMedication') : t('addMedication')}</h2>
                     <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }}
                         onClick={onClose}
                         className="w-10 h-10 rounded-lg themed-text-muted hover:themed-text transition-colors flex items-center justify-center min-w-[40px] shrink-0"
@@ -133,7 +132,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                     <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
                         {/* File Upload */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Photo or Document (Optional)</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('photoOrDoc')}</label>
                             {form.image ? (
                                 <div className="relative rounded-xl overflow-hidden border group" style={{ borderColor: 'var(--color-border)' }}>
                                     {isImage ? (
@@ -152,10 +151,10 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                         <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={() => fileInputRef.current?.click()}
                                             className="px-3 py-2 bg-white/95 rounded-xl hover:bg-white transition-colors flex items-center gap-2 text-xs font-bold text-primary-600 shadow-lg min-h-[40px]">
                                             <Camera size={14} />
-                                            CHANGE FILE
+                                            {t('changeFile')}
                                         </motion.button>
                                         <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={handleRemoveFile}
-                                            className="p-2.5 bg-red-500 rounded-xl hover:bg-red-600 transition-colors shadow-lg min-h-[40px] min-w-[40px] flex items-center justify-center" title="Remove file">
+                                            className="p-2.5 bg-red-500 rounded-xl hover:bg-red-600 transition-colors shadow-lg min-h-[40px] min-w-[40px] flex items-center justify-center" title={t('removePhoto')}>
                                             <Trash2 size={18} className="text-white" />
                                         </motion.button>
                                     </div>
@@ -166,7 +165,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                     className="w-full h-24 sm:h-28 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 transition-colors themed-text-muted min-h-[44px]"
                                     style={{ borderColor: 'var(--color-border-input)', background: 'var(--color-input-bg)' }}>
                                     <Camera size={22} className="text-primary-500" />
-                                    <span className="text-xs font-bold">Tap to upload Photo / PDF / DOC</span>
+                                    <span className="text-xs font-bold">{t('tapToUpload')}</span>
                                 </motion.button>
                             )}
                             <input
@@ -180,7 +179,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
 
                         {/* ── Pill Color Selector ─────────────────────────────── */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-2">Pill Color</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-2">{t('pillColor')}</label>
                             <div className="flex flex-wrap gap-2.5">
                                 {PILL_COLORS.map((c) => (
                                     <motion.button
@@ -195,8 +194,8 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                             backgroundColor: c.hex,
                                             ringOffsetColor: 'var(--color-modal)',
                                         }}
-                                        title={c.name.charAt(0).toUpperCase() + c.name.slice(1)}
-                                        aria-label={`Select ${c.name} pill color`}
+                                        title={t(c.key)}
+                                        aria-label={`Select ${t(c.key)} color`}
                                     >
                                         {form.color === c.name && (
                                             <motion.div
@@ -214,48 +213,54 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
 
                         {/* Name */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Medication Name *</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('medName')}</label>
                             <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                placeholder="e.g. Metformin" required
+                                placeholder={t('medNamePlaceholder')} required
                                 className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]" />
                         </div>
 
                         {/* Dosage */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Dosage *</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('dosage')}</label>
                             <input type="text" value={form.dosage} onChange={(e) => setForm({ ...form, dosage: e.target.value })}
-                                placeholder="e.g. 500mg" required
+                                placeholder={t('dosagePlaceholder')} required
                                 className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]" />
                         </div>
 
                         {/* Frequency */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Frequency</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('frequency')}</label>
                             <select value={form.frequency} onChange={(e) => setForm({ ...form, frequency: e.target.value })}
                                 className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]">
-                                <option>Once daily</option><option>Twice daily</option><option>Three times</option><option>As needed</option>
+                                <option value="Once daily">{t('freqOnce')}</option>
+                                <option value="Twice daily">{t('freqTwice')}</option>
+                                <option value="Three times">{t('freqThree')}</option>
+                                <option value="As needed">{t('freqAsNeeded')}</option>
                             </select>
                         </div>
 
                         {/* Schedule */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Schedule</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('schedule')}</label>
                             <select value={form.schedule} onChange={(e) => setForm({ ...form, schedule: e.target.value })}
                                 className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]">
-                                <option>Morning</option><option>Afternoon</option><option>Evening</option><option>Bedtime</option>
+                                <option value="Morning">{t('schedMorning')}</option>
+                                <option value="Afternoon">{t('schedAfternoon')}</option>
+                                <option value="Evening">{t('schedEvening')}</option>
+                                <option value="Bedtime">{t('schedBedtime')}</option>
                             </select>
                         </div>
 
                         {/* Notes */}
                         <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Notes</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">{t('notes')}</label>
                             <div className="rounded-xl overflow-hidden border transition-colors focus-within:border-primary-500"
                                 style={{ borderColor: 'var(--color-border-input)', background: 'var(--color-input-bg)' }}>
                                 <textarea
                                     rows={3}
                                     value={form.notes}
                                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                                    placeholder="Optional notes..."
+                                    placeholder={t('notesPlaceholder')}
                                     className="w-full px-4 py-2.5 outline-none text-sm min-h-[100px] resize-none leading-relaxed bg-transparent border-0 focus:ring-0"
                                     style={{
                                         whiteSpace: 'pre-wrap',
@@ -276,10 +281,10 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                         <motion.button type="button" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
                             onClick={onClose}
                             className="flex-1 py-3 sm:py-2.5 rounded-xl font-semibold text-sm themed-text themed-pref-row transition-colors border border-gray-200/50 min-h-[44px] flex items-center justify-center">
-                            Cancel
+                            {t('cancel')}
                         </motion.button>
                         <PrimaryButton type="submit" size="md" className="flex-1 min-h-[44px] flex items-center justify-center">
-                            {isEditing ? 'Save Changes' : 'Add Medication'}
+                            {isEditing ? t('saveChanges') : t('addMedication')}
                         </PrimaryButton>
                     </div>
                 </form>

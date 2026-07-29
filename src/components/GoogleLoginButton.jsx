@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from './ui/Toast';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 
 /**
  * Modern SVG Google Icon
@@ -20,6 +21,7 @@ function GoogleIcon({ className = "w-5 h-5" }) {
 }
 
 export default function GoogleLoginButton({ onSuccessCallback, className = '' }) {
+    const { t } = useLanguage();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { loginWithGoogleToken } = useAuth();
     const { addToast } = useToast();
@@ -28,13 +30,11 @@ export default function GoogleLoginButton({ onSuccessCallback, className = '' })
     const handleSuccess = async (credentialResponse) => {
         setIsSubmitting(true);
         try {
-            const tokenOrCredential = credentialResponse.credential || credentialResponse.access_token;
             let user = null;
 
             if (credentialResponse.credential) {
                 user = loginWithGoogleToken(credentialResponse.credential);
             } else if (credentialResponse.access_token) {
-                // Access token flow fallback — fetch userinfo from Google
                 const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                     headers: { Authorization: `Bearer ${credentialResponse.access_token}` },
                 });
@@ -44,7 +44,7 @@ export default function GoogleLoginButton({ onSuccessCallback, className = '' })
             }
 
             if (user) {
-                addToast(`Welcome, ${user.name}! 🎉`, 'success');
+                addToast(t('googleSignInSuccess'), 'success');
                 if (onSuccessCallback) {
                     onSuccessCallback(user);
                 } else {
@@ -55,7 +55,7 @@ export default function GoogleLoginButton({ onSuccessCallback, className = '' })
             }
         } catch (error) {
             console.error('Google Auth Processing Error:', error);
-            addToast(error.message || 'Authentication failed. Please try again.', 'error');
+            addToast(error.message || t('googleSignInFail'), 'error');
         } finally {
             setIsSubmitting(false);
         }
@@ -67,11 +67,10 @@ export default function GoogleLoginButton({ onSuccessCallback, className = '' })
         if (error?.error === 'popup_closed_by_user') {
             addToast('Sign in cancelled', 'info');
         } else {
-            addToast('Google Sign-In failed or popup was closed. Please try again.', 'error');
+            addToast(t('googleSignInFail'), 'error');
         }
     };
 
-    // Custom OAuth popup login handler via @react-oauth/google
     const customPopupLogin = useGoogleLogin({
         onSuccess: (tokenResponse) => handleSuccess(tokenResponse),
         onError: (errorResponse) => handleError(errorResponse),
@@ -108,7 +107,6 @@ export default function GoogleLoginButton({ onSuccessCallback, className = '' })
                 )}
             </motion.button>
 
-            {/* Official Google GIS rendering as fallback / alternate entry */}
             <div className="hidden">
                 <GoogleLogin
                     onSuccess={handleSuccess}

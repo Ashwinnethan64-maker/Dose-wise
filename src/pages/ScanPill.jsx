@@ -13,8 +13,10 @@ import GlassCard from '../components/ui/GlassCard';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import SectionHeader from '../components/ui/SectionHeader';
 import Skeleton from '../components/ui/Skeleton';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ScanPill() {
+    const { t } = useLanguage();
     const [model, setModel] = useState(null);
     const [modelReady, setModelReady] = useState(false);
     const [modelError, setModelError] = useState(false);
@@ -59,7 +61,6 @@ export default function ScanPill() {
     const handleOpenAddModal = () => {
         if (!prediction) return;
 
-        // Auto-detect color from label
         const colors = ['white', 'blue', 'red', 'yellow', 'green', 'orange', 'pink', 'purple'];
         const detectedColor = colors.find(c => prediction.className.toLowerCase().includes(c)) || 'white';
 
@@ -76,13 +77,13 @@ export default function ScanPill() {
 
     const handleSaveMedication = (medData) => {
         addMedication(medData);
-        addToast('Medication added from AI Scan', 'success');
+        addToast(t('medAddedSuccess'), 'success');
         navigate('/medications');
     };
 
     return (
         <AnimatedPage className="space-y-6 sm:space-y-8">
-            <SectionHeader title="Scan Your Pill" subtitle="Point your camera at a pill and our AI will identify it" icon={<ScanLine size={24} />} />
+            <SectionHeader title={t('scanPillTitle')} subtitle={t('scanPillSubtitle')} icon={<ScanLine size={24} />} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
                 <div>
@@ -114,7 +115,7 @@ export default function ScanPill() {
                 {allPredictions.length > 1 && (
                     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                         <h3 className="text-xs sm:text-sm font-semibold themed-text-muted mb-2.5 sm:mb-3 flex items-center gap-1.5">
-                            <Sparkles size={14} className="text-primary-400" /> All Detected Labels
+                            <Sparkles size={14} className="text-primary-400" /> {t('detectedLabels')}
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
                             {allPredictions.map((p, i) => {
@@ -148,7 +149,7 @@ export default function ScanPill() {
                                 <Info size={18} className="text-blue-500 sm:w-5 sm:h-5" />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-xs sm:text-sm font-semibold text-blue-800 mb-0.5 sm:mb-1">AI Model Not Connected</p>
+                                <p className="text-xs sm:text-sm font-semibold text-blue-800 mb-0.5 sm:mb-1">{t('modelNotConnected')}</p>
                                 <p className="text-[11px] sm:text-xs text-blue-600 leading-relaxed">
                                     Replace the <code className="bg-blue-100/80 px-1.5 py-0.5 rounded text-[10px] sm:text-[11px]">MODEL_URL</code> in{' '}
                                     <code className="bg-blue-100/80 px-1.5 py-0.5 rounded text-[10px] sm:text-[11px]">src/ai/modelLoader.js</code> with your Teachable Machine model URL.
@@ -162,7 +163,7 @@ export default function ScanPill() {
 
             <div className="flex justify-center pt-2">
                 <PrimaryButton onClick={() => navigate('/medications')} icon={<PlusCircle size={16} />} size="md" className="w-full sm:w-auto">
-                    Add Medication Manually
+                    {t('manualAddMed')}
                 </PrimaryButton>
             </div>
 

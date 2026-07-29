@@ -1,15 +1,11 @@
 import GlassCard from './ui/GlassCard';
+import { useLanguage } from '../context/LanguageContext';
 
 /**
- * PredictionCard — Displays the AI prediction result.
- *
- * Props:
- *  - prediction : { className: string, probability: number } | null
- *  - isModelReady : boolean
- *  - cameraActive : boolean
- *  - onAdd : callback function
+ * PredictionCard — Displays the AI prediction result with full localization.
  */
 export default function PredictionCard({ prediction, isModelReady, cameraActive, onAdd }) {
+    const { t } = useLanguage();
     const confidence = prediction ? Math.round(prediction.probability * 100) : 0;
     const isLowConfidence = confidence < 50;
     const showFallback = !prediction || isLowConfidence;
@@ -39,7 +35,7 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
                     </svg>
                 </div>
                 <p className="text-base sm:text-lg font-bold themed-text">
-                    Start the camera to identify your pill
+                    {t('cameraInstruction')}
                 </p>
             </GlassCard>
         );
@@ -50,7 +46,7 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
             {/* ── Header ────────────────────────────────────────── */}
             <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider themed-text-muted mb-5 flex items-center justify-center gap-2">
                 <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isModelReady ? 'bg-medical-safe animate-pulse' : 'bg-medical-warn animate-pulse'}`} />
-                {isModelReady ? 'AI Analysis' : 'Loading Model…'}
+                {isModelReady ? t('aiAnalysis') : t('loadingModel')}
             </h2>
 
             {/* ── Prediction Result ─────────────────────────────── */}
@@ -58,7 +54,7 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
                 <div className="space-y-5">
                     {/* Pill name */}
                     <div className="text-center">
-                        <p className="text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1">Identified As</p>
+                        <p className="text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1">{t('identifiedAs')}</p>
                         <p className="text-2xl sm:text-3xl font-extrabold themed-text leading-tight">
                             {prediction.className}
                         </p>
@@ -67,7 +63,7 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
                     {/* Confidence bar */}
                     <div>
                         <div className="flex justify-between items-baseline mb-2">
-                            <span className="text-sm themed-text-muted font-semibold">Confidence</span>
+                            <span className="text-sm themed-text-muted font-semibold">{t('confidence')}</span>
                             <span className={`text-lg font-bold ${confidence >= 80 ? 'text-medical-safe' : confidence >= 50 ? 'text-medical-warn' : 'text-medical-danger'}`}>
                                 {confidence}%
                             </span>
@@ -83,12 +79,12 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
                     {/* Confidence hint */}
                     {confidence >= 80 && (
                         <p className="text-medical-safe text-sm text-center font-semibold flex items-center justify-center gap-1.5">
-                            ✅ High confidence — likely match
+                            {t('highConfidence')}
                         </p>
                     )}
                     {confidence >= 50 && confidence < 80 && (
                         <p className="text-medical-warn text-sm text-center font-semibold flex items-center justify-center gap-1.5">
-                            ⚠️ Moderate confidence — verify with pharmacist
+                            {t('moderateConfidence')}
                         </p>
                     )}
 
@@ -104,7 +100,7 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
                         <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                        Add to My Meds
+                        {t('addToMyMeds')}
                     </button>
                 </div>
             ) : (
@@ -117,10 +113,10 @@ export default function PredictionCard({ prediction, isModelReady, cameraActive,
                     </div>
                     <div>
                         <p className="text-base sm:text-lg font-bold themed-text">
-                            Unable to identify pill
+                            {t('unableToIdentify')}
                         </p>
                         <p className="text-xs sm:text-sm themed-text-muted mt-1 leading-relaxed">
-                            Please add the pill details manually or try again with better lighting.
+                            {t('unableIdentifySub')}
                         </p>
                     </div>
                 </div>

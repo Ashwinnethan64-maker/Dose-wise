@@ -17,6 +17,8 @@ import useNotifications from './hooks/useNotifications';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
+import { LanguageProvider } from './context/LanguageContext';
+
 /* Notification runner — lives inside providers so it has access to context */
 function NotificationRunner() {
   useNotifications();
@@ -55,11 +57,13 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              <AppRoutes />
-            </ToastProvider>
-          </ThemeProvider>
+          <LanguageProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <AppRoutes />
+              </ToastProvider>
+            </ThemeProvider>
+          </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>

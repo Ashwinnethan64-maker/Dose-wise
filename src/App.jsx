@@ -12,7 +12,7 @@ import Adherence from './pages/Adherence';
 import Caregiver from './pages/Caregiver';
 import Assistant from './pages/Assistant';
 import Profile from './pages/Profile';
-import LandingPage from './pages/LandingPage';
+
 import useNotifications from './hooks/useNotifications';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -32,7 +32,7 @@ function AppRoutes() {
     <>
       <NotificationRunner />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
         <Route
           path="/login"
           element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}

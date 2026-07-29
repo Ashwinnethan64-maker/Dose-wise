@@ -32,35 +32,36 @@ export default function ConfirmModal({
                 onClick={onClose}
             />
             <motion.div
-                initial={{ opacity: 0, scale: 0.92, y: 12 }}
+                initial={{ opacity: 0, scale: 0.94, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: 8 }}
+                exit={{ opacity: 0, scale: 0.94, y: 8 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                className="relative w-full max-w-sm rounded-2xl border p-6 themed-modal text-center"
+                className="relative w-full max-w-sm rounded-2xl border p-6 themed-modal text-center shadow-xl"
             >
                 <motion.button
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onClose}
-                    className="absolute top-3 right-3 p-1.5 rounded-lg themed-text-muted"
+                    className="absolute top-3 right-3 p-1.5 rounded-lg themed-text-muted hover:themed-text transition-colors"
+                    aria-label="Close dialog"
                 >
-                    <X size={18} />
+                    <X size={16} />
                 </motion.button>
 
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 ${variant === 'danger' ? 'bg-red-50' : 'bg-amber-50'}`}>
-                    <AlertTriangle size={28} className={variant === 'danger' ? 'text-medical-danger' : 'text-medical-warn'} />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 ${variant === 'danger' ? 'bg-red-50' : 'bg-amber-50'}`}>
+                    <AlertTriangle size={24} className={variant === 'danger' ? 'text-medical-danger' : 'text-medical-warn'} />
                 </div>
 
-                <h3 className="text-elder-base font-bold themed-text mb-1.5">{title}</h3>
-                <p className="text-sm themed-text-muted leading-relaxed mb-6">{message}</p>
+                <h3 className="text-base font-bold themed-text mb-1.5">{title}</h3>
+                <p className="text-sm themed-text-muted leading-relaxed mb-5">{message}</p>
 
                 <div className="flex gap-3">
-                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={onClose}
-                        className="flex-1 py-3 rounded-xl font-bold text-sm themed-text themed-pref-row transition-colors">
+                    <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={onClose}
+                        className="flex-1 py-2.5 rounded-xl font-semibold text-sm themed-text themed-pref-row transition-colors border border-gray-200/50">
                         {cancelLabel}
                     </motion.button>
-                    <motion.button whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.95 }} onClick={onConfirm}
-                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-shadow ${confirmColors[variant]}`}>
+                    <motion.button whileHover={{ y: -1, scale: 1.01 }} whileTap={{ scale: 0.97 }} onClick={onConfirm}
+                        className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all ${confirmColors[variant]}`}>
                         {confirmLabel}
                     </motion.button>
                 </div>

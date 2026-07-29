@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 /**
  * GlassCard — Glass morphism card using CSS variables for theme awareness.
  */
-export default function GlassCard({ children, className = '', hover = false, glow = false, onClick, padding = 'p-5' }) {
+export default function GlassCard({ children, className = '', hover = false, glow = false, onClick, padding = 'p-6' }) {
     return (
         <motion.div
             onClick={onClick}
-            whileHover={hover ? { y: -3, scale: 1.01 } : undefined}
+            whileHover={hover ? { y: -2, scale: 1.005 } : undefined}
             className={`
         rounded-2xl border
         transition-all duration-300

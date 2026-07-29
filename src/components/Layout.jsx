@@ -17,12 +17,12 @@ export default function Layout() {
             </div>
 
             {/* Page content */}
-            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6 relative z-10 overflow-x-hidden">
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 relative z-10 overflow-x-hidden">
                 <Outlet />
             </main>
 
             {/* Footer */}
-            <footer className="text-center py-4 text-[11px] themed-text-muted backdrop-blur-sm border-t" style={{ borderColor: 'var(--color-border)' }}>
+            <footer className="text-center py-5 sm:py-6 px-4 text-xs themed-text-muted backdrop-blur-sm border-t" style={{ borderColor: 'var(--color-border)' }}>
                 DoseWise AI — Your Health Data Stays Private 🔒
             </footer>
         </div>

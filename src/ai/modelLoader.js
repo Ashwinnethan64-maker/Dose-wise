@@ -19,26 +19,35 @@ import * as tmImage from '@teachablemachine/image';
 export const MODEL_URL =
     'https://teachablemachine.withgoogle.com/models/kj9jZ5jHg/';
 
-// Internal reference to the loaded model
+// Internal reference to the loaded model and in-flight loading promise
 let _model = null;
+let _loadPromise = null;
 
 /**
- * Load a Teachable Machine image model.
+ * Load a Teachable Machine image model with singleton caching.
  * @param {string} [url] — model URL (defaults to MODEL_URL)
  * @returns {Promise<tmImage.CustomMobileNet | null>}
  */
 export async function loadModel(url = MODEL_URL) {
-    try {
-        const modelURL = url + 'model.json';
-        const metadataURL = url + 'metadata.json';
-        _model = await tmImage.load(modelURL, metadataURL);
-        console.log('[PillAI] Model loaded successfully —', _model.getTotalClasses(), 'classes');
-        return _model;
-    } catch (err) {
-        console.error('[PillAI] Failed to load model:', err);
-        _model = null;
-        return null;
-    }
+    if (_model) return _model;
+    if (_loadPromise) return _loadPromise;
+
+    _loadPromise = (async () => {
+        try {
+            const modelURL = url + 'model.json';
+            const metadataURL = url + 'metadata.json';
+            _model = await tmImage.load(modelURL, metadataURL);
+            console.log('[PillAI] Model loaded successfully —', _model.getTotalClasses(), 'classes');
+            return _model;
+        } catch (err) {
+            console.error('[PillAI] Failed to load model:', err);
+            _model = null;
+            _loadPromise = null;
+            return null;
+        }
+    })();
+
+    return _loadPromise;
 }
 
 /**

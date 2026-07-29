@@ -18,8 +18,8 @@ export default function useReminders(medications = []) {
             try {
                 new Notification(title, {
                     body,
-                    icon: '💊',
-                    badge: '💊',
+                    icon: '/app-icon.png',
+                    badge: '/app-icon.png',
                     tag: 'dosewise-reminder',
                 });
             } catch {

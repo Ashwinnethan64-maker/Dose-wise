@@ -1,4 +1,4 @@
-import { Bot, User } from 'lucide-react';
+﻿import { Bot, User } from 'lucide-react';
 
 /**
  * ChatBubble — Chat message bubble for the DoseWise Assistant.
@@ -24,7 +24,7 @@ export default function ChatBubble({ message, sender = 'ai', timestamp }) {
 
             {/* Bubble */}
             <div
-                className={`max-w-[75%] px-5 py-3.5 rounded-2xl text-elder-sm leading-relaxed ${isUser
+                className={`max-w-[75%] px-5 py-3.5 rounded-2xl text-sm leading-relaxed ${isUser
                     ? 'bg-primary-500 text-white rounded-br-md'
                     : 'bg-white border border-primary-100 text-medical-text rounded-bl-md shadow-card'
                     }`}

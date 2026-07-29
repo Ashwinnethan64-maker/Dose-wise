@@ -52,10 +52,6 @@ export default {
         accent: ['"Plus Jakarta Sans"', 'sans-serif'],
         sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
       },
-      spacing: {
-        '4': '4px', '8': '8px', '12': '12px', '16': '16px', '24': '24px',
-        '32': '32px', '48': '48px', '64': '64px', '96': '96px',
-      },
       fontSize: {
         'elder-sm': ['1.125rem', { lineHeight: '1.75rem' }],
         'elder-base': ['1.25rem', { lineHeight: '1.875rem' }],

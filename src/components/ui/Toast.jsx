@@ -5,10 +5,10 @@ import { Check, AlertTriangle, Info, X } from 'lucide-react';
 const ToastContext = createContext(null);
 
 const ICONS = {
-    success: <Check size={18} />,
-    warning: <AlertTriangle size={18} />,
-    error: <AlertTriangle size={18} />,
-    info: <Info size={18} />,
+    success: <Check size={15} />,
+    warning: <AlertTriangle size={15} />,
+    error: <AlertTriangle size={15} />,
+    info: <Info size={15} />,
 };
 
 const STYLES = {
@@ -46,23 +46,24 @@ export function ToastProvider({ children }) {
                     {toasts.map((toast) => (
                         <motion.div
                             key={toast.id}
-                            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                            initial={{ opacity: 0, y: 12, scale: 0.96 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            exit={{ opacity: 0, x: 16, scale: 0.95 }}
+                            transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                             className={`
-                flex items-center gap-3 px-5 py-3.5 rounded-2xl border
-                backdrop-blur-lg shadow-glass font-medium text-sm
+                flex items-center gap-3 px-4 py-3 rounded-xl border
+                backdrop-blur-lg shadow-lg font-medium text-sm
                 ${STYLES[toast.type]}
               `}
                         >
                             <span className="shrink-0">{ICONS[toast.type]}</span>
-                            <p className="flex-1">{toast.message}</p>
+                            <p className="flex-1 leading-snug">{toast.message}</p>
                             <button
                                 onClick={() => removeToast(toast.id)}
-                                className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
+                                className="shrink-0 opacity-40 hover:opacity-100 transition-opacity p-0.5 rounded"
+                                aria-label="Dismiss notification"
                             >
-                                <X size={16} />
+                                <X size={14} />
                             </button>
                         </motion.div>
                     ))}

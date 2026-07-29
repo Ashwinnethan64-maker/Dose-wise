@@ -5,12 +5,12 @@ import { useToast } from '../components/ui/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Heart, ArrowRight, X, Mail } from 'lucide-react';
 import PrimaryButton from '../components/ui/PrimaryButton';
-import GoogleAuth from '../components/GoogleAuth';
+import GoogleLoginButton from '../components/GoogleLoginButton';
+import { useTheme } from '../utils/theme';
 
 
 
 /* ─── Forgot Password Modal ───────────────────────────────── */
-// ... (omitted for brevity during replacement if possible, but I'll include it to be safe)
 function ForgotPasswordModal({ isOpen, onClose }) {
     const [resetEmail, setResetEmail] = useState('');
     const [sent, setSent] = useState(false);
@@ -56,7 +56,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
                     <Mail size={26} className="text-primary-500" />
                 </div>
 
-                <h3 className="text-elder-base font-bold themed-text text-center mb-1.5">Reset Password</h3>
+                <h3 className="text-base font-bold themed-text text-center mb-1.5">Reset Password</h3>
                 <p className="text-sm themed-text-muted text-center mb-5 leading-relaxed">
                     Enter your email and we'll send you a reset link.
                 </p>
@@ -73,7 +73,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
                             type="email" value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
                             placeholder="your@email.com" required
-                            className="w-full px-4 py-3 rounded-xl themed-input outline-none text-elder-sm"
+                            className="w-full px-4 py-3 rounded-xl themed-input outline-none text-sm"
                         />
                         <PrimaryButton type="submit" size="md" className="w-full">
                             Send Reset Link
@@ -86,6 +86,8 @@ function ForgotPasswordModal({ isOpen, onClose }) {
 }
 
 /* ─── Login Page ──────────────────────────────────────────── */
+import DoseWiseLogo from '../components/DoseWiseLogo';
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -93,6 +95,7 @@ export default function Login() {
     const [focused, setFocused] = useState(null);
     const [forgotOpen, setForgotOpen] = useState(false);
     const { login, loginWithGoogle } = useAuth();
+    const { isDark } = useTheme();
     const { addToast } = useToast();
     const navigate = useNavigate();
 
@@ -129,79 +132,71 @@ export default function Login() {
 
             <div className="w-full max-w-md relative z-10">
                 {/* Logo */}
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center mb-8">
-                    <motion.div
-                        whileHover={{ rotate: 12, scale: 1.1 }}
-                        className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-glow-lg mb-5"
-                    >
-                        <span className="text-4xl">💊</span>
-                    </motion.div>
-                    <h1 className="text-elder-3xl font-bold themed-text">
-                        DoseWise <span className="bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">AI</span>
-                    </h1>
-                    <p className="text-sm themed-text-muted mt-1.5 font-medium">Your AI-Powered Medication Companion</p>
+                <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-6 flex flex-col items-center">
+                    <DoseWiseLogo size="lg" className="justify-center mb-2" />
+                    <p className="text-sm themed-text-muted mt-1 font-medium">Your AI-Powered Medication Companion</p>
                 </motion.div>
 
                 {/* Card */}
                 <motion.div
-                    initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                    initial={{ opacity: 0, y: 20, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.15 }}
-                    className="rounded-3xl p-8 border themed-modal"
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                    className="rounded-2xl p-6 sm:p-8 border themed-modal shadow-xl"
                 >
-                    <h2 className="text-elder-xl font-bold themed-text mb-6 text-center">Welcome Back</h2>
+                    <h2 className="text-xl font-bold themed-text mb-5 text-center">Welcome Back</h2>
 
                     {/* Google Sign-In */}
-                    <GoogleAuth onSuccess={handleGoogleResponse} />
+                    <GoogleLoginButton />
 
                     {/* Divider */}
-                    <div className="flex items-center gap-3 mb-6">
+                    <div className="flex items-center gap-3 my-5">
                         <div className="flex-1 h-px" style={{ background: 'var(--color-border-input)' }} />
-                        <span className="text-xs themed-text-muted font-medium">or sign in with email</span>
+                        <span className="text-xs themed-text-muted font-semibold uppercase tracking-wider">or sign in with email</span>
                         <div className="flex-1 h-px" style={{ background: 'var(--color-border-input)' }} />
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="relative">
-                            <label className="block text-sm font-semibold themed-text mb-1.5">Email</label>
-                            <motion.div animate={focused === 'email' ? { scale: 1.005 } : { scale: 1 }}>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Email</label>
+                            <motion.div animate={focused === 'email' ? { scale: 1.002 } : { scale: 1 }}>
                                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                                     onFocus={() => setFocused('email')} onBlur={() => setFocused(null)}
                                     placeholder="your@email.com"
-                                    className="w-full px-4 py-3.5 rounded-xl themed-input outline-none text-elder-sm"
-                                    style={focused === 'email' ? { boxShadow: '0 0 0 4px rgba(13,158,158,0.1)' } : {}}
+                                    className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm"
+                                    style={focused === 'email' ? { boxShadow: '0 0 0 4px rgba(13,158,158,0.14)', borderColor: 'var(--color-border-input-focus)' } : {}}
                                 />
                             </motion.div>
                         </div>
 
                         <div className="relative">
                             <div className="flex items-center justify-between mb-1.5">
-                                <label className="block text-sm font-semibold themed-text">Password</label>
+                                <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted">Password</label>
                                 <button type="button" onClick={() => setForgotOpen(true)}
-                                    className="text-xs text-primary-500 hover:text-primary-700 font-semibold transition-colors">
+                                    className="text-xs text-primary-500 hover:text-primary-700 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-primary-500 rounded">
                                     Forgot password?
                                 </button>
                             </div>
-                            <motion.div animate={focused === 'password' ? { scale: 1.005 } : { scale: 1 }}>
+                            <motion.div animate={focused === 'password' ? { scale: 1.002 } : { scale: 1 }}>
                                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                                     onFocus={() => setFocused('password')} onBlur={() => setFocused(null)}
                                     placeholder="••••••••"
-                                    className="w-full px-4 py-3.5 rounded-xl themed-input outline-none text-elder-sm"
-                                    style={focused === 'password' ? { boxShadow: '0 0 0 4px rgba(13,158,158,0.1)' } : {}}
+                                    className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm"
+                                    style={focused === 'password' ? { boxShadow: '0 0 0 4px rgba(13,158,158,0.14)', borderColor: 'var(--color-border-input-focus)' } : {}}
                                 />
                             </motion.div>
                         </div>
 
                         {error && (
                             <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                className="text-medical-danger text-sm text-center font-medium">
+                                className="text-medical-danger text-xs text-center font-semibold pt-1">
                                 ⚠️ {error}
                             </motion.p>
                         )}
 
-                        <motion.button type="submit" whileHover={{ y: -2, scale: 1.02 }} whileTap={{ y: 0, scale: 0.97 }}
-                            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-elder-base py-4 rounded-2xl shadow-btn hover:shadow-btn-hover transition-shadow duration-300 flex items-center justify-center gap-2">
-                            Sign In <ArrowRight size={20} />
+                        <motion.button type="submit" whileHover={{ y: -1, scale: 1.01 }} whileTap={{ y: 0, scale: 0.98 }}
+                            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-sm py-3 rounded-xl shadow-btn hover:shadow-btn-hover transition-all duration-200 flex items-center justify-center gap-2 mt-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
+                            Sign In <ArrowRight size={18} />
                         </motion.button>
                     </form>
 

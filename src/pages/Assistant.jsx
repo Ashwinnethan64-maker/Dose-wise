@@ -1,57 +1,84 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, Sparkles } from 'lucide-react';
+import { Send, Bot, Sparkles, AlertCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import AnimatedPage from '../components/ui/AnimatedPage';
+import { sendMessageToGLM } from '../ai/chatService';
 
-/* ─── Mock AI responses ──────────────────────────────────── */
-const AI_RESPONSES = {
-    'hello': "Hello! I'm your DoseWise Assistant. How can I help you with your medications today?",
-    'hi': "Hi there! 👋 I can help you with pill identification, medication schedules, and health questions. What would you like to know?",
-    'what is this pill': "To identify a pill, please go to the **Scan Pill** page and use your camera. I can help you understand the results once you scan it!",
-    'when should i take medicine': "Check your **Adherence** page for today's schedule. Generally, take medications at the same time each day. Set reminders in the app to stay on track! ⏰",
-    'side effects': "Side effects vary by medication. Always read the label and consult your doctor. If you experience severe side effects, seek medical attention immediately. 🏥",
-    'missed dose': "If you missed a dose, take it as soon as you remember unless it's close to your next dose. Never double up without checking with your pharmacist. 💊",
-    'interaction': "Drug interactions can be serious. Check the **My Meds** page — we automatically flag known interactions. Always inform your doctor about all medications you take.",
-    'reminder': "You can set up reminders in the app! Go to **My Meds**, set your schedule times, and we'll send browser notifications when it's time to take your meds. 🔔",
-};
-
-function getAIResponse(input) {
-    const lower = input.toLowerCase().trim();
-    for (const [key, response] of Object.entries(AI_RESPONSES)) {
-        if (lower.includes(key)) return response;
+/* ─── Helper for user-friendly error messages ───────────── */
+function getErrorMessage(errType) {
+    switch (errType) {
+        case 'API_KEY_MISSING':
+            return 'API Key is missing. Please check your `.env` configuration for `VITE_GLM_API_KEY`.';
+        case 'INVALID_API_KEY':
+            return 'Invalid NVIDIA GLM API Key. Please verify your key in the `.env` file.';
+        case 'RATE_LIMIT':
+            return 'You have reached the API rate limit or quota. Please wait a moment and try again.';
+        case 'TIMEOUT':
+            return 'The request timed out. Please check your network connection and try again.';
+        case 'OFFLINE':
+        case 'NETWORK_ERROR':
+            return 'Network error or offline. Please check your internet connection.';
+        default:
+            return 'An unexpected error occurred while communicating with DoseWise AI. Please try again.';
     }
-    return "I'm here to help with medication questions! You can ask me about:\n• Pill identification\n• Medication schedules\n• Side effects\n• Drug interactions\n• Missed doses\n• Setting reminders";
 }
 
 /* ─── Chat Bubble ────────────────────────────────────────── */
-function ChatBubble({ message, sender, timestamp }) {
+function ChatBubble({ message, sender, timestamp, isError }) {
     const isUser = sender === 'user';
     return (
         <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
+            className={`flex gap-2 items-start ${isUser ? 'flex-row-reverse' : ''}`}
         >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isUser ? 'bg-primary-100 text-primary-600' : 'bg-gradient-to-br from-primary-400 to-primary-600 text-white shadow-glow'
-                }`}>
-                {isUser ? <span className="text-sm font-bold">You</span> : <Bot size={18} />}
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                isUser 
+                    ? 'bg-primary-100 text-primary-600' 
+                    : isError
+                        ? 'bg-red-500 text-white shadow-glow'
+                        : 'bg-gradient-to-br from-primary-400 to-primary-600 text-white shadow-glow'
+            }`}>
+                {isUser ? <span className="text-sm font-bold">You</span> : isError ? <AlertCircle size={18} /> : <Bot size={18} />}
             </div>
-            <div className={`max-w-[75%] px-5 py-3.5 text-sm leading-relaxed ${isUser
-                ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl rounded-br-md shadow-btn'
-                : 'rounded-2xl rounded-bl-md themed-text'
-                }`}
-                style={!isUser ? {
-                    background: 'var(--color-surface)',
-                    backdropFilter: 'blur(12px)',
-                    borderColor: 'var(--color-border)',
-                    border: '1px solid var(--color-border)',
-                    boxShadow: '0 4px 16px var(--color-card-shadow), inset 0 1px 0 var(--color-inset)',
-                } : {}}
+            <div className={`text-sm leading-relaxed ${
+                isUser
+                    ? 'w-fit max-w-[52%] px-4 py-[14px] bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl rounded-br-md shadow-btn'
+                    : isError
+                        ? 'max-w-[68%] p-4 rounded-2xl rounded-bl-md text-red-600 bg-red-500/10 border border-red-500/20'
+                        : 'max-w-[68%] p-4 rounded-2xl rounded-bl-md themed-text'
+            }`}
+            style={(!isUser && !isError) ? {
+                background: 'var(--color-surface)',
+                backdropFilter: 'blur(12px)',
+                borderColor: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+                boxShadow: '0 4px 16px var(--color-card-shadow), inset 0 1px 0 var(--color-inset)',
+            } : {}}
             >
-                <p className="whitespace-pre-wrap">{message}</p>
+                {isUser ? (
+                    <p className="whitespace-pre-wrap leading-relaxed">{message}</p>
+                ) : (
+                    <div className="prose prose-sm dark:prose-invert max-w-none text-current space-y-2">
+                        <ReactMarkdown
+                            components={{
+                                p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                                li: ({ children }) => <li className="leading-normal">{children}</li>,
+                                strong: ({ children }) => <strong className="font-semibold text-primary-500">{children}</strong>,
+                                code: ({ children }) => <code className="bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs">{children}</code>,
+                                a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary-500 underline">{children}</a>,
+                            }}
+                        >
+                            {message}
+                        </ReactMarkdown>
+                    </div>
+                )}
                 {timestamp && (
-                    <p className={`text-[10px] mt-1.5 ${isUser ? 'text-white/50' : 'themed-text-muted opacity-60'}`}>{timestamp}</p>
+                    <p className={`text-[10px] mt-2 ${isUser ? 'text-white/60 text-right' : 'themed-text-muted opacity-60'}`}>{timestamp}</p>
                 )}
             </div>
         </motion.div>
@@ -61,7 +88,7 @@ function ChatBubble({ message, sender, timestamp }) {
 /* ─── Typing dots indicator ─────────────────────────────── */
 function TypingIndicator() {
     return (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="flex gap-3">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="flex gap-3 items-end">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white shadow-glow">
                 <Bot size={18} />
             </div>
@@ -78,7 +105,7 @@ export default function Assistant() {
     const [messages, setMessages] = useState([
         {
             sender: 'ai',
-            message: "Hello! I'm your DoseWise Assistant 🤖 I can help you with pill identification, medication questions, and health reminders. What would you like to know?",
+            message: "Hello! I'm your DoseWise AI Assistant 🤖 I can help you with pill identification, medication questions, side effects, and health guidance. What would you like to know?",
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
     ]);
@@ -86,66 +113,118 @@ export default function Assistant() {
     const [isTyping, setIsTyping] = useState(false);
     const chatEndRef = useRef(null);
 
-    useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, isTyping]);
+    useEffect(() => { 
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); 
+    }, [messages, isTyping]);
 
-    const generateDoseWiseReply = (message) => {
-        const msg = message.toLowerCase();
-        if (msg.includes('pill') || msg.includes('what is this pill')) {
-            return "This looks like a medication-related question. You can scan a pill or add it to My Meds for better tracking.";
-        }
-        if (msg.includes('when should i take')) {
-            return "Medication timing depends on your prescription. Check your schedule inside My Meds.";
-        }
-        if (msg.includes('side effects')) {
-            return "Side effects vary by medication. Always consult a professional for medical advice.";
-        }
-        return "I'm your DoseWise Assistant. I can help with medicines, reminders, and pill identification.";
-    };
-
-    const handleSend = () => {
-        if (!input.trim()) return;
+    const handleSend = async () => {
         const query = input.trim();
+        if (!query || isTyping) return;
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const userMsg = {
             sender: 'user',
             message: query,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            timestamp: timeStr
         };
 
+        const currentHistory = [...messages];
         setMessages((prev) => [...prev, userMsg]);
         setInput('');
         setIsTyping(true);
 
-        // Small random delay for "alive" feel
-        setTimeout(() => {
+        // Prepare placeholder AI message for streaming
+        const aiMsgIndex = currentHistory.length + 1;
+
+        try {
+            const replyText = await sendMessageToGLM(currentHistory, query, (chunkText) => {
+                setIsTyping(false); // Hide typing dots once first chunk arrives
+                setMessages((prev) => {
+                    const newArr = [...prev];
+                    if (newArr[aiMsgIndex]) {
+                        newArr[aiMsgIndex] = {
+                            ...newArr[aiMsgIndex],
+                            message: chunkText
+                        };
+                    } else {
+                        newArr.push({
+                            sender: 'ai',
+                            message: chunkText,
+                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        });
+                    }
+                    return newArr;
+                });
+            });
+
+            // Ensure response is set even if streaming callback didn't fire
+            if (replyText) {
+                setMessages((prev) => {
+                    const newArr = [...prev];
+                    if (newArr[aiMsgIndex]) {
+                        newArr[aiMsgIndex] = {
+                            ...newArr[aiMsgIndex],
+                            message: replyText
+                        };
+                    } else {
+                        newArr.push({
+                            sender: 'ai',
+                            message: replyText,
+                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        });
+                    }
+                    return newArr;
+                });
+            }
+        } catch (error) {
+            console.error("Chatbot Error:", error);
             setIsTyping(false);
-            const reply = generateDoseWiseReply(query);
-            setMessages((prev) => [...prev, {
-                sender: 'ai',
-                message: reply,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }]);
-        }, 800 + Math.random() * 500);
+            const friendlyErr = getErrorMessage(error.message) + (error.rawDetails ? ` (${error.rawDetails})` : '');
+            setMessages((prev) => [
+                ...prev.filter((_, idx) => idx !== aiMsgIndex),
+                {
+                    sender: 'ai',
+                    message: friendlyErr,
+                    isError: true,
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }
+            ]);
+        } finally {
+            setIsTyping(false);
+        }
     };
 
-    const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+    const handleKeyDown = (e) => { 
+        if (e.key === 'Enter' && !e.shiftKey) { 
+            e.preventDefault(); 
+            handleSend(); 
+        } 
+    };
 
-    const quickQuestions = ['What is this pill?', 'When should I take medicine?', 'Missed dose', 'Side effects', 'Drug interaction', 'Set a reminder'];
+    const quickQuestions = [
+        'What is this pill?', 
+        'When should I take medicine?', 
+        'Missed dose guidance', 
+        'Side effects overview', 
+        'Drug interactions', 
+        'Storage instructions'
+    ];
 
     return (
-        <AnimatedPage className="flex flex-col flex-1 h-[calc(100dvh-8rem)] sm:h-[calc(100vh-8rem)]">
-            <div className="mb-4">
-                <h1 className="text-elder-2xl font-bold themed-text flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-glow">
+        <AnimatedPage className="flex flex-col flex-1 h-[calc(100vh-9.5rem)] min-h-[500px]">
+            <div className="mb-4 sm:mb-6">
+                <h1 className="text-2xl sm:text-3xl font-bold themed-text flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-glow shrink-0">
                         <Bot size={20} className="text-white" />
                     </div>
                     DoseWise Assistant
                     <Sparkles size={18} className="text-primary-400 animate-pulse-slow" />
                 </h1>
-                <p className="text-sm themed-text-muted mt-1 font-medium">Your Health Analytics & Medication Companion</p>
+                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">Your Health Analytics & Medication Companion</p>
             </div>
 
             {/* Chat area */}
-            <div className="flex-1 overflow-y-auto rounded-2xl p-5 space-y-4 mb-4"
+            <div className="flex-1 overflow-y-auto rounded-2xl p-4 sm:p-6 space-y-4 mb-3 sm:mb-4"
                 style={{
                     background: 'var(--color-surface)',
                     backdropFilter: 'blur(8px)',
@@ -158,11 +237,12 @@ export default function Assistant() {
             </div>
 
             {/* Quick chips */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 {quickQuestions.map((q) => (
                     <motion.button key={q} whileHover={{ y: -2, scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                        disabled={isTyping}
                         onClick={() => setInput(q)}
-                        className="text-xs font-medium px-3.5 py-1.5 rounded-full border text-primary-600 transition-colors"
+                        className="text-xs font-medium px-3.5 py-1.5 rounded-full border text-primary-600 hover:bg-primary-50/40 transition-colors disabled:opacity-50"
                         style={{ borderColor: 'var(--color-border-input)', background: 'var(--color-surface)' }}>
                         {q}
                     </motion.button>
@@ -170,15 +250,26 @@ export default function Assistant() {
             </div>
 
             {/* Input area */}
-            <div className="flex gap-3 p-2 rounded-2xl"
+            <div className="flex gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-2xl"
                 style={{ background: 'var(--color-surface)', backdropFilter: 'blur(16px)', border: '1px solid var(--color-border)', boxShadow: '0 8px 32px var(--color-card-shadow)' }}>
-                <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
+                <textarea 
+                    rows={1}
+                    value={input} 
+                    onChange={(e) => setInput(e.target.value)} 
+                    onKeyDown={handleKeyDown}
+                    disabled={isTyping}
                     placeholder="Ask about your medications..."
-                    className="flex-1 px-4 py-3 rounded-xl bg-transparent outline-none text-elder-sm themed-text"
-                    style={{ color: 'var(--color-text)' }} />
-                <motion.button onClick={handleSend} disabled={!input.trim()} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.9 }}
-                    className="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-3 rounded-xl shadow-btn hover:shadow-btn-hover transition-shadow disabled:opacity-40 disabled:cursor-not-allowed">
-                    <Send size={20} />
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-transparent outline-none text-sm themed-text focus-visible:outline-2 focus-visible:outline-primary-500 resize-none"
+                    style={{ color: 'var(--color-text)' }} 
+                />
+                <motion.button 
+                    onClick={handleSend} 
+                    disabled={!input.trim() || isTyping} 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.9 }}
+                    className="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-3 rounded-xl shadow-btn hover:shadow-btn-hover transition-shadow disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 flex items-center justify-center shrink-0"
+                >
+                    <Send size={18} />
                 </motion.button>
             </div>
         </AnimatedPage>

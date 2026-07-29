@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './utils/auth';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import { ThemeProvider } from './utils/theme';
 import { ToastProvider } from './components/ui/Toast';
 import Layout from './components/Layout';
@@ -13,11 +14,8 @@ import Assistant from './pages/Assistant';
 import Profile from './pages/Profile';
 import LandingPage from './pages/LandingPage';
 import useNotifications from './hooks/useNotifications';
-
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-}
+import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 
 /* Notification runner — lives inside providers so it has access to context */
 function NotificationRunner() {
@@ -52,19 +50,17 @@ function AppRoutes() {
   );
 }
 
-import ErrorBoundary from './components/ErrorBoundary';
-
 export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
             <ToastProvider>
               <AppRoutes />
             </ToastProvider>
-          </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

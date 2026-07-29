@@ -25,67 +25,69 @@ export default function Adherence() {
     const handleSnooze = (med) => { snooze(med.name); addToast(`${med.name} snoozed for 15 minutes`, 'info'); };
 
     return (
-        <AnimatedPage className="space-y-7">
+        <AnimatedPage className="space-y-6 sm:space-y-8">
             <div>
-                <h1 className="text-elder-2xl font-bold themed-text">Daily Adherence</h1>
-                <p className="text-sm themed-text-muted mt-1 font-medium">Track your medication intake for today</p>
+                <h1 className="text-2xl sm:text-3xl font-bold themed-text">Daily Adherence</h1>
+                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">Track your medication intake for today</p>
             </div>
 
             <div>
                 <SectionHeader title="Today's Checklist" icon={<Clock size={22} />} className="mb-4" />
 
                 {todayMeds.length === 0 ? (
-                    <GlassCard className="text-center py-10">
+                    <GlassCard className="text-center py-10 sm:py-12 px-6">
                         <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
                             <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center mb-4">
                                 <Clock size={28} className="text-primary-400" />
                             </div>
                         </motion.div>
-                        <p className="text-elder-sm themed-text-muted">No medications to track. Add medications first.</p>
+                        <p className="text-sm sm:text-base themed-text-muted">No medications to track. Add medications first.</p>
                     </GlassCard>
                 ) : (
-                    <StaggerContainer className="space-y-3">
+                    <StaggerContainer className="space-y-3 sm:space-y-4">
                         {todayMeds.map((med) => (
                             <StaggerItem key={med.id}>
-                                <GlassCard className={`transition-all duration-300 !p-5 ${med.status === 'taken' ? '!border-green-200/80' :
+                                <GlassCard padding="p-5 sm:p-6" className={`transition-all duration-300 ${med.status === 'taken' ? '!border-green-200/80' :
                                         med.status === 'skipped' ? '!border-orange-200/80' : ''
                                     }`}>
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 transition-all ${med.status === 'taken' ? 'bg-green-100' :
-                                                med.status === 'skipped' ? 'bg-orange-100' :
-                                                    'bg-gradient-to-br from-primary-50 to-primary-100'
-                                            }`}>💊</div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-elder-base font-bold themed-text truncate">{med.name}</p>
-                                            <p className="text-sm themed-text-muted">{med.dosage} · {med.schedule} · {med.frequency}</p>
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 transition-all ${med.status === 'taken' ? 'bg-green-100' :
+                                                    med.status === 'skipped' ? 'bg-orange-100' :
+                                                        'bg-gradient-to-br from-primary-50 to-primary-100'
+                                                }`}>💊</div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-base sm:text-lg font-bold themed-text truncate">{med.name}</p>
+                                                <p className="text-xs sm:text-sm themed-text-muted mt-0.5">{med.dosage} · {med.schedule} · {med.frequency}</p>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <AnimatePresence mode="wait">
-                                        {!med.status ? (
-                                            <motion.div key="actions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }} className="flex gap-3 mt-4">
-                                                <motion.button whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.95 }} onClick={() => handleTaken(med)}
-                                                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-elder-sm py-3.5 rounded-xl shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2">
-                                                    <Check size={20} /> TAKEN
-                                                </motion.button>
-                                                <motion.button whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.95 }} onClick={() => handleSkipped(med)}
-                                                    className="flex-1 bg-gradient-to-r from-amber-400 to-amber-500 text-white font-bold text-elder-sm py-3.5 rounded-xl shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2">
-                                                    <SkipForward size={20} /> SKIPPED
-                                                </motion.button>
-                                                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleSnooze(med)}
-                                                    className="px-4 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold text-sm py-3 rounded-xl transition-colors flex items-center gap-1.5" title="Snooze 15 min">
-                                                    <Bell size={16} /> Snooze
-                                                </motion.button>
-                                            </motion.div>
-                                        ) : (
-                                            <motion.div key="status" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-3">
-                                                <StatusBadge status={med.status} />
-                                                <span className="text-xs themed-text-muted ml-2">
-                                                    · {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </span>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                        <AnimatePresence mode="wait">
+                                            {!med.status ? (
+                                                <motion.div key="actions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }} className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">
+                                                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={() => handleTaken(med)}
+                                                        className="h-10 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 shrink-0">
+                                                        <Check size={16} /> Taken
+                                                    </motion.button>
+                                                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={() => handleSkipped(med)}
+                                                        className="h-10 px-4 bg-gradient-to-r from-amber-400 to-amber-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 shrink-0">
+                                                        <SkipForward size={16} /> Skipped
+                                                    </motion.button>
+                                                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={() => handleSnooze(med)}
+                                                        className="h-10 px-3.5 bg-primary-50 hover:bg-primary-100 text-primary-600 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0" title="Snooze 15 min">
+                                                        <Bell size={15} /> Snooze
+                                                    </motion.button>
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div key="status" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 shrink-0">
+                                                    <StatusBadge status={med.status} />
+                                                    <span className="text-xs themed-text-muted">
+                                                        · {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
                                 </GlassCard>
                             </StaggerItem>
                         ))}
@@ -96,47 +98,47 @@ export default function Adherence() {
             {/* Weekly Calendar View */}
             <div>
                 <SectionHeader title="Weekly Calendar" icon={<Calendar size={22} />} className="mb-4" />
-                <GlassCard>
-                    <div className="grid grid-cols-7 gap-3">
+                <GlassCard padding="p-5 sm:p-6">
+                    <div className="grid grid-cols-7 gap-2 sm:gap-4">
                         {weeklyData.map((day) => {
                             const total = day.taken + day.skipped;
                             const pct = total > 0 ? Math.round((day.taken / total) * 100) : -1;
                             const isToday = day.date === new Date().toISOString().split('T')[0];
                             return (
-                                <motion.div key={day.date} whileHover={{ scale: 1.1 }} className="text-center">
-                                    <p className={`text-xs font-semibold mb-2 ${isToday ? 'text-primary-500' : 'themed-text-muted'}`}>{day.dayName}</p>
-                                    <div className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-bold border-2 transition-all duration-200 ${isToday ? 'ring-2 ring-primary-400 ring-offset-2' : ''
+                                <motion.div key={day.date} whileHover={{ scale: 1.05 }} className="text-center flex flex-col items-center">
+                                    <p className={`text-xs font-bold mb-2 ${isToday ? 'text-primary-500' : 'themed-text-muted'}`}>{day.dayName}</p>
+                                    <div className={`w-full max-w-[70px] min-h-[56px] py-2 px-1 rounded-2xl flex flex-col items-center justify-center border-2 transition-all duration-200 shadow-sm ${isToday ? 'ring-2 ring-primary-400 ring-offset-2' : ''
                                         } ${pct < 0 ? 'bg-gray-50 text-gray-400 border-gray-200' :
                                             pct >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
                                                 pct >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                                     'bg-red-50 text-red-700 border-red-200'
                                         }`}>
-                                        <span className="text-base">{pct < 0 ? '–' : `${pct}%`}</span>
-                                        {total > 0 && <span className="text-[10px] opacity-60">{day.taken}/{total}</span>}
+                                        <span className="text-xs sm:text-sm font-extrabold leading-tight">{pct < 0 ? '–' : `${pct}%`}</span>
+                                        {total > 0 && <span className="text-[10px] opacity-75 font-semibold leading-none mt-0.5">{day.taken}/{total}</span>}
                                     </div>
                                 </motion.div>
                             );
                         })}
                     </div>
 
-                    <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
+                    <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
                         {[
                             { color: 'bg-green-100 text-green-700 border-green-200', label: '80%+' },
                             { color: 'bg-amber-100 text-amber-700 border-amber-200', label: '50-79%' },
                             { color: 'bg-red-100 text-red-700 border-red-200', label: '<50%' },
                             { color: 'bg-gray-100 text-gray-500 border-gray-200', label: 'No data' },
                         ].map(({ color, label }) => (
-                            <span key={label} className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border ${color}`}>{label}</span>
+                            <span key={label} className={`text-xs font-semibold px-3 py-1 rounded-full border ${color}`}>{label}</span>
                         ))}
                     </div>
                 </GlassCard>
             </div>
 
             {/* Overall */}
-            <GlassCard glow className="text-center">
-                <p className="text-sm themed-text-muted font-medium mb-1">Overall Adherence Rate</p>
+            <GlassCard glow padding="p-6 sm:p-8" className="text-center">
+                <p className="text-xs sm:text-sm themed-text-muted font-semibold uppercase tracking-wider mb-2">Overall Adherence Rate</p>
                 <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    className={`text-4xl font-bold ${adherencePercentage >= 80 ? 'text-medical-safe' : adherencePercentage >= 50 ? 'text-medical-warn' : 'text-medical-danger'}`}>
+                    className={`text-4xl sm:text-5xl font-extrabold ${adherencePercentage >= 80 ? 'text-medical-safe' : adherencePercentage >= 50 ? 'text-medical-warn' : 'text-medical-danger'}`}>
                     {adherencePercentage}%
                 </motion.p>
             </GlassCard>

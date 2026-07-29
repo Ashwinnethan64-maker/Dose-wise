@@ -19,50 +19,59 @@ export default function MedicationCard({ med, onEdit, onDelete, interactions = [
 
     return (
         <motion.div
-            whileHover={{ y: -3, scale: 1.01 }}
-            className={`rounded-2xl border p-5 transition-all duration-300 ${hasCritical ? 'border-red-200/80' : ''}`}
+            whileHover={{ y: -2, scale: 1.005 }}
+            className={`rounded-2xl border p-4 sm:p-5 transition-all duration-250 ${hasCritical ? 'border-red-200/80' : ''}`}
             style={{
                 background: 'var(--color-surface)',
                 backdropFilter: 'blur(12px)',
                 borderColor: hasCritical ? undefined : 'var(--color-border)',
-                boxShadow: '0 8px 32px var(--color-card-shadow), inset 0 1px 0 var(--color-inset)',
+                boxShadow: '0 4px 24px var(--color-card-shadow), inset 0 1px 0 var(--color-inset)',
+                willChange: 'transform',
             }}
         >
             <div className="flex items-start gap-4">
-                <div
-                    className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center text-2xl shrink-0 ${pill.bg} ${pill.border}`}
-                    style={{ boxShadow: `0 0 16px ${pill.glow}` }}
-                >
-                    💊
-                </div>
+                {med.image && (med.fileType?.startsWith('image/') || med.image.startsWith('data:image/')) ? (
+                    <img
+                        src={med.image}
+                        alt={med.name}
+                        className="w-14 h-14 rounded-xl object-cover shrink-0 border border-primary-200/50 shadow-sm"
+                    />
+                ) : (
+                    <div
+                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center text-xl shrink-0 ${pill.bg} ${pill.border}`}
+                        style={{ boxShadow: `0 0 12px ${pill.glow}` }}
+                    >
+                        💊
+                    </div>
+                )}
 
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-elder-base font-bold themed-text truncate">{med.name}</h3>
-                    <p className="text-sm themed-text-muted mt-0.5">{med.dosage}</p>
+                    <h3 className="text-sm sm:text-base font-bold themed-text truncate">{med.name}</h3>
+                    <p className="text-xs sm:text-sm themed-text-muted mt-0.5 opacity-75">{med.dosage}</p>
                     <div className="flex flex-wrap gap-2 mt-2.5">
                         {med.schedule && (
                             <span className="flex items-center gap-1 text-xs bg-primary-50/80 text-primary-700 px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-                                <Clock size={11} /> {med.schedule}
+                                <Clock size={12} /> {med.schedule}
                             </span>
                         )}
                         {med.frequency && (
                             <span className="flex items-center gap-1 text-xs bg-blue-50/80 text-blue-700 px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-                                <Repeat size={11} /> {med.frequency}
+                                <Repeat size={12} /> {med.frequency}
                             </span>
                         )}
                     </div>
                 </div>
 
-                <div className="flex gap-1 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                     <IconButton icon={<Pencil size={17} />} onClick={() => onEdit?.(med)} label="Edit" variant="default" />
                     <IconButton icon={<Trash2 size={17} />} onClick={() => onDelete?.(med.id)} label="Delete" variant="danger" />
                 </div>
             </div>
 
             {interactions.length > 0 && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3 space-y-1.5">
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3.5 space-y-2">
                     {interactions.map((inter, i) => (
-                        <div key={i} className={`text-xs px-3 py-1.5 rounded-xl font-medium border ${inter.severity === 'critical' ? 'bg-red-50/80 text-red-700 border-red-200' : 'bg-amber-50/80 text-amber-700 border-amber-200'
+                        <div key={i} className={`text-xs px-3.5 py-2 rounded-xl font-medium border ${inter.severity === 'critical' ? 'bg-red-50/80 text-red-700 border-red-200' : 'bg-amber-50/80 text-amber-700 border-amber-200'
                             }`}>
                             {inter.severity === 'critical' ? '🚨' : '⚠️'} {inter.drug}: {inter.message}
                         </div>

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { User, Camera, Trash2, Bell, BellOff, Moon, Sun, Save } from 'lucide-react';
-import { useAuth } from '../utils/auth';
+import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../utils/theme';
 import useProfile from '../hooks/useProfile';
 import { useToast } from '../components/ui/Toast';
@@ -55,41 +55,50 @@ export default function Profile() {
     };
 
     return (
-        <AnimatedPage className="space-y-6 max-w-2xl mx-auto">
+        <AnimatedPage className="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
             <SectionHeader title="Profile Settings" subtitle="Manage your account preferences" icon={<User size={24} />} />
 
             {/* Avatar Card */}
-            <GlassCard>
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                    <div className="relative group">
-                        <div className="w-28 h-28 rounded-2xl overflow-hidden border-3 border-primary-200 flex items-center justify-center"
+            <GlassCard padding="p-5 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
+                    <div className="relative shrink-0 group">
+                        <div className="w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary-300 shadow-md flex items-center justify-center"
                             style={{ background: 'var(--color-badge-bg)' }}>
-                            {profile.avatar ? (
-                                <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            {(profile.avatar || user?.avatar) ? (
+                                <img src={profile.avatar || user?.avatar} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
-                                <User size={48} className="text-primary-400" />
+                                <User size={64} className="text-primary-500" />
                             )}
                         </div>
-                        <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <motion.button whileTap={{ scale: 0.9 }} onClick={() => fileInputRef.current?.click()}
-                                className="p-2 bg-white/90 rounded-xl hover:bg-white transition-colors" title="Upload photo">
-                                <Camera size={18} className="text-primary-600" />
-                            </motion.button>
+                        {/* Hover Overlay with clean badge buttons */}
+                        <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center gap-3 backdrop-blur-[2px]">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-11 h-11 bg-white text-primary-600 rounded-xl hover:bg-primary-50 transition-transform active:scale-95 shadow-md flex items-center justify-center shrink-0"
+                                title="Upload photo"
+                                aria-label="Upload avatar"
+                            >
+                                <Camera size={22} />
+                            </button>
                             {profile.avatar && (
-                                <motion.button whileTap={{ scale: 0.9 }} onClick={handleRemoveAvatar}
-                                    className="p-2 bg-white/90 rounded-xl hover:bg-white transition-colors" title="Remove photo">
-                                    <Trash2 size={18} className="text-medical-danger" />
-                                </motion.button>
+                                <button
+                                    onClick={handleRemoveAvatar}
+                                    className="w-11 h-11 bg-white text-medical-danger rounded-xl hover:bg-red-50 transition-transform active:scale-95 shadow-md flex items-center justify-center shrink-0"
+                                    title="Remove photo"
+                                    aria-label="Remove avatar"
+                                >
+                                    <Trash2 size={22} />
+                                </button>
                             )}
                         </div>
                         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
                     </div>
                     <div className="flex-1 text-center sm:text-left">
-                        <h3 className="text-elder-lg font-bold themed-text">{displayName || user?.name || 'User'}</h3>
-                        <p className="text-sm themed-text-muted">{user?.email || 'user@example.com'}</p>
+                        <h3 className="text-lg font-bold themed-text">{displayName || user?.name || 'User'}</h3>
+                        <p className="text-sm themed-text-muted opacity-75 mt-0.5">{user?.email || 'user@example.com'}</p>
                         {user?.provider === 'google' && <GoogleBadge />}
                         {user?.provider === 'email' && (
-                            <span className="inline-flex items-center gap-1 mt-2 text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                            <span className="inline-flex items-center gap-1 mt-2.5 text-[11px] font-semibold px-3 py-1 rounded-full"
                                 style={{ background: 'var(--color-badge-bg)', color: 'var(--color-text)' }}>
                                 ✉️ Email Account
                             </span>
@@ -99,71 +108,75 @@ export default function Profile() {
             </GlassCard>
 
             {/* Personal Info */}
-            <GlassCard>
-                <h3 className="text-elder-base font-bold themed-text mb-4">Personal Information</h3>
-                <div className="space-y-4">
+            <GlassCard padding="p-5 sm:p-6">
+                <h3 className="text-base sm:text-lg font-bold themed-text mb-4 sm:mb-5 flex items-center gap-2">
+                    Personal Information
+                </h3>
+                <div className="space-y-4 sm:space-y-5">
                     <div>
-                        <label className="block text-sm font-semibold themed-text mb-1.5">Display Name</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5 sm:mb-2">Display Name</label>
                         <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)}
                             placeholder="Your name..."
-                            className="w-full px-4 py-3 rounded-xl themed-input outline-none text-elder-sm" />
+                            className="w-full px-4 py-2.5 sm:py-3 rounded-xl themed-input outline-none text-sm" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold themed-text mb-1.5">Email</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5 sm:mb-2">Email</label>
                         <input type="email" value={user?.email || ''} disabled
-                            className="w-full px-4 py-3 rounded-xl themed-input outline-none text-elder-sm cursor-not-allowed opacity-60" />
-                        <p className="text-[11px] themed-text-muted mt-1">Email cannot be changed</p>
+                            className="w-full px-4 py-2.5 sm:py-3 rounded-xl themed-input outline-none text-sm cursor-not-allowed opacity-60" />
+                        <p className="text-xs themed-text-muted mt-1.5 opacity-60">Email cannot be changed</p>
                     </div>
                 </div>
             </GlassCard>
 
             {/* Preferences */}
-            <GlassCard>
-                <h3 className="text-elder-base font-bold themed-text mb-4">Preferences</h3>
-                <div className="space-y-4">
+            <GlassCard padding="p-5 sm:p-6">
+                <h3 className="text-base sm:text-lg font-bold themed-text mb-4 sm:mb-5">Preferences</h3>
+                <div className="space-y-3 sm:space-y-4">
                     {/* Theme Toggle */}
-                    <div className="flex items-center justify-between p-4 rounded-xl themed-pref-row">
-                        <div className="flex items-center gap-3">
-                            {isDark ? <Moon size={20} className="text-primary-500" /> : <Sun size={20} className="text-primary-500" />}
-                            <div>
-                                <p className="font-semibold themed-text text-sm">Theme</p>
-                                <p className="text-xs themed-text-muted">{isDark ? 'Dark mode' : 'Light mode'}</p>
+                    <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl themed-pref-row gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                            {isDark ? <Moon size={20} className="text-primary-500 shrink-0" /> : <Sun size={20} className="text-primary-500 shrink-0" />}
+                            <div className="min-w-0">
+                                <p className="font-semibold themed-text text-sm sm:text-base truncate">Theme</p>
+                                <p className="text-xs sm:text-sm themed-text-muted opacity-75 truncate">{isDark ? 'Dark mode active' : 'Light mode active'}</p>
                             </div>
                         </div>
-                        <motion.button whileTap={{ scale: 0.9 }} onClick={toggleTheme}
-                            className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 ${isDark ? 'bg-primary-500' : 'bg-gray-300'}`}>
-                            <motion.div animate={{ x: isDark ? 24 : 0 }}
+                        <motion.button whileTap={{ scale: 0.95 }} onClick={toggleTheme}
+                            className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-300 flex items-center shrink-0 cursor-pointer ${isDark ? 'bg-primary-500' : 'bg-gray-200'}`}
+                            aria-label="Toggle theme">
+                            <motion.div animate={{ x: isDark ? 20 : 0 }}
                                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                className="w-6 h-6 bg-white rounded-full shadow-sm" />
+                                className="w-5 h-5 bg-white rounded-full shadow-sm shrink-0" />
                         </motion.button>
                     </div>
 
                     {/* Notifications Toggle */}
-                    <div className="flex items-center justify-between p-4 rounded-xl themed-pref-row">
-                        <div className="flex items-center gap-3">
-                            {notificationsEnabled ? <Bell size={20} className="text-primary-500" /> : <BellOff size={20} className="themed-text-muted" />}
-                            <div>
-                                <p className="font-semibold themed-text text-sm">Notifications</p>
-                                <p className="text-xs themed-text-muted">{notificationsEnabled ? 'Medication reminders active' : 'Reminders disabled'}</p>
+                    <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl themed-pref-row gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                            {notificationsEnabled ? <Bell size={20} className="text-primary-500 shrink-0" /> : <BellOff size={20} className="themed-text-muted shrink-0" />}
+                            <div className="min-w-0">
+                                <p className="font-semibold themed-text text-sm sm:text-base truncate">Notifications</p>
+                                <p className="text-xs sm:text-sm themed-text-muted opacity-75 truncate">{notificationsEnabled ? 'Medication reminders active' : 'Reminders disabled'}</p>
                             </div>
                         </div>
-                        <motion.button whileTap={{ scale: 0.9 }} onClick={() => {
+                        <motion.button whileTap={{ scale: 0.95 }} onClick={() => {
                             const next = !notificationsEnabled;
                             setNotificationsEnabled(next);
                             addToast(next ? 'Reminders enabled 🔔' : 'Reminders disabled 🔕', next ? 'success' : 'info');
                         }}
-                            className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 ${notificationsEnabled ? 'bg-primary-500' : 'bg-gray-300'}`}>
-                            <motion.div animate={{ x: notificationsEnabled ? 24 : 0 }}
+                            className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-300 flex items-center shrink-0 cursor-pointer ${notificationsEnabled ? 'bg-primary-500' : 'bg-gray-200'}`}
+                            aria-label="Toggle notifications">
+                            <motion.div animate={{ x: notificationsEnabled ? 20 : 0 }}
                                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                className="w-6 h-6 bg-white rounded-full shadow-sm" />
+                                className="w-5 h-5 bg-white rounded-full shadow-sm shrink-0" />
                         </motion.button>
                     </div>
                 </div>
             </GlassCard>
 
             {/* Save */}
-            <div className="flex justify-end">
-                <PrimaryButton onClick={handleSave} icon={<Save size={18} />} size="md">
+            <div className="flex justify-end pt-2">
+                <PrimaryButton onClick={handleSave} icon={<Save size={16} />} size="md">
                     Save Changes
                 </PrimaryButton>
             </div>

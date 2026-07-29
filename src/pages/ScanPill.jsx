@@ -81,20 +81,17 @@ export default function ScanPill() {
     };
 
     return (
-        <AnimatedPage className="space-y-6">
+        <AnimatedPage className="space-y-6 sm:space-y-8">
             <SectionHeader title="Scan Your Pill" subtitle="Point your camera at a pill and our AI will identify it" icon={<ScanLine size={24} />} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="relative">
-                    {cameraActive && <div className="absolute -inset-1.5 rounded-[1.25rem] ai-scan-border opacity-60 blur-[1px]" />}
-                    <div className="relative rounded-2xl overflow-hidden" style={cameraActive ? { boxShadow: '0 0 30px rgba(13,158,158,0.2)' } : {}}>
-                        <WebcamScanner
-                            model={model}
-                            onPrediction={handlePrediction}
-                            onImageChange={setCapturedImage}
-                            isModelReady={modelReady}
-                        />
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                <div>
+                    <WebcamScanner
+                        model={model}
+                        onPrediction={handlePrediction}
+                        onImageChange={setCapturedImage}
+                        isModelReady={modelReady}
+                    />
                 </div>
 
                 <div className="flex flex-col justify-center">
@@ -105,7 +102,7 @@ export default function ScanPill() {
                         onAdd={handleOpenAddModal}
                     />
                     {modelLoading && (
-                        <div className="space-y-3 mt-4">
+                        <div className="space-y-3 mt-4 sm:mt-5">
                             <Skeleton height="3rem" rounded="rounded-xl" />
                             <Skeleton height="1rem" width="60%" rounded="rounded-lg" />
                         </div>
@@ -164,7 +161,7 @@ export default function ScanPill() {
             )}
 
             <div className="flex justify-center pt-2">
-                <PrimaryButton onClick={() => navigate('/medications')} icon={<PlusCircle size={20} />} size="md">
+                <PrimaryButton onClick={() => navigate('/medications')} icon={<PlusCircle size={16} />} size="md">
                     Add Medication Manually
                 </PrimaryButton>
             </div>

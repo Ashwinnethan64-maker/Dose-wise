@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { ScanLine, Pill, AlertTriangle, Calendar, ArrowRight, Sparkles } from 'lucide-react';
 import useMedications from '../hooks/useMedications';
 import useAdherence from '../hooks/useAdherence';
+import { useAuth } from '../hooks/useAuth';
+import useProfile from '../hooks/useProfile';
 import AdherenceRing from '../components/AdherenceRing';
 import AnimatedPage, { StaggerContainer, StaggerItem } from '../components/ui/AnimatedPage';
 import MetricCard from '../components/ui/MetricCard';
@@ -11,6 +13,8 @@ import GlassCard from '../components/ui/GlassCard';
 import StatusBadge from '../components/ui/StatusBadge';
 
 export default function Dashboard() {
+    const { user } = useAuth();
+    const { profile } = useProfile();
     const { medications } = useMedications();
     const { adherencePercentage, missedToday, getStatusToday, weeklyData } = useAdherence();
     const navigate = useNavigate();
@@ -21,6 +25,8 @@ export default function Dashboard() {
     }));
     const pendingCount = todayMeds.filter((m) => !m.status).length;
     const hour = new Date().getHours();
+    const rawName = profile?.displayName || user?.name || (user?.email ? user.email.split('@')[0] : '');
+    const firstName = rawName ? rawName.trim().split(' ')[0] : '';
     const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
     return (
@@ -28,7 +34,7 @@ export default function Dashboard() {
             {/* Header */}
             <div>
                 <h1 className="text-2xl sm:text-3xl font-bold themed-text flex items-center gap-2.5">
-                    {greeting} <motion.span animate={{ rotate: [0, 14, -8, 14, 0] }} transition={{ duration: 1.5, delay: 0.3 }}>👋</motion.span>
+                    {greeting}{firstName ? `, ${firstName}` : ''} <motion.span animate={{ rotate: [0, 14, -8, 14, 0] }} transition={{ duration: 1.5, delay: 0.3 }}>👋</motion.span>
                 </h1>
                 <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">
                     Here's your health overview for today

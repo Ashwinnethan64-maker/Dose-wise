@@ -285,7 +285,7 @@
   /* Themed navbar */
   .themed-navbar {
     position: fixed !important;
-    top: var(--navbar-offset) !important;
+    top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 50 !important;
@@ -296,7 +296,7 @@
     border-color: var(--color-border);
     border-top: none !important;
     outline: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
     transition: background 0.3s ease;
   }
 

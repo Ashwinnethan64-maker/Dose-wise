@@ -43,12 +43,12 @@ function ChatBubble({ message, sender, timestamp, isError }) {
             }`}>
                 {isUser ? <span className="text-sm font-bold">You</span> : isError ? <AlertCircle size={18} /> : <Bot size={18} />}
             </div>
-            <div className={`text-sm leading-relaxed ${
+            <div className={`text-xs sm:text-sm leading-relaxed ${
                 isUser
-                    ? 'w-fit max-w-[52%] px-4 py-[14px] bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl rounded-br-md shadow-btn'
+                    ? 'w-fit max-w-[82%] sm:max-w-[52%] px-3.5 sm:px-4 py-3 sm:py-[14px] bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl rounded-br-md shadow-btn'
                     : isError
-                        ? 'max-w-[68%] p-4 rounded-2xl rounded-bl-md text-red-600 bg-red-500/10 border border-red-500/20'
-                        : 'max-w-[68%] p-4 rounded-2xl rounded-bl-md themed-text'
+                        ? 'max-w-[85%] sm:max-w-[68%] p-3.5 sm:p-4 rounded-2xl rounded-bl-md text-red-600 bg-red-500/10 border border-red-500/20'
+                        : 'max-w-[85%] sm:max-w-[68%] p-3.5 sm:p-4 rounded-2xl rounded-bl-md themed-text'
             }`}
             style={(!isUser && !isError) ? {
                 background: 'var(--color-surface)',
@@ -211,20 +211,20 @@ export default function Assistant() {
     ];
 
     return (
-        <AnimatedPage className="flex flex-col flex-1 h-[calc(100vh-9.5rem)] min-h-[500px]">
-            <div className="mb-4 sm:mb-6">
-                <h1 className="text-2xl sm:text-3xl font-bold themed-text flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-glow shrink-0">
-                        <Bot size={20} className="text-white" />
+        <AnimatedPage className="flex flex-col flex-1 h-[calc(100dvh-10.5rem)] sm:h-[calc(100vh-9.5rem)] min-h-[480px]">
+            <div className="mb-3 sm:mb-6">
+                <h1 className="text-xl sm:text-3xl font-bold themed-text flex items-center gap-2.5 sm:gap-3">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-glow shrink-0">
+                        <Bot size={18} className="text-white sm:w-5 sm:h-5" />
                     </div>
-                    DoseWise Assistant
-                    <Sparkles size={18} className="text-primary-400 animate-pulse-slow" />
+                    <span>DoseWise Assistant</span>
+                    <Sparkles size={16} className="text-primary-400 animate-pulse-slow sm:w-[18px] sm:h-[18px]" />
                 </h1>
-                <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">Your Health Analytics & Medication Companion</p>
+                <p className="text-xs sm:text-base themed-text-muted mt-1 font-medium">Your Health Analytics & Medication Companion</p>
             </div>
 
             {/* Chat area */}
-            <div className="flex-1 overflow-y-auto rounded-2xl p-4 sm:p-6 space-y-4 mb-3 sm:mb-4"
+            <div className="flex-1 overflow-y-auto rounded-2xl p-3 sm:p-6 space-y-3.5 sm:space-y-4 mb-2.5 sm:mb-4"
                 style={{
                     background: 'var(--color-surface)',
                     backdropFilter: 'blur(8px)',
@@ -236,13 +236,13 @@ export default function Assistant() {
                 <div ref={chatEndRef} />
             </div>
 
-            {/* Quick chips */}
-            <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
+            {/* Quick chips - scrollable on mobile */}
+            <div className="flex items-center gap-2 overflow-x-auto py-1 mb-2.5 sm:mb-4 scrollbar-none whitespace-nowrap -mx-1 px-1">
                 {quickQuestions.map((q) => (
                     <motion.button key={q} whileHover={{ y: -2, scale: 1.04 }} whileTap={{ scale: 0.96 }}
                         disabled={isTyping}
                         onClick={() => setInput(q)}
-                        className="text-xs font-medium px-3.5 py-1.5 rounded-full border text-primary-600 hover:bg-primary-50/40 transition-colors disabled:opacity-50"
+                        className="text-xs font-medium px-3 py-1.5 rounded-full border text-primary-600 hover:bg-primary-50/40 transition-colors disabled:opacity-50 shrink-0 min-h-[36px] flex items-center"
                         style={{ borderColor: 'var(--color-border-input)', background: 'var(--color-surface)' }}>
                         {q}
                     </motion.button>
@@ -250,7 +250,7 @@ export default function Assistant() {
             </div>
 
             {/* Input area */}
-            <div className="flex gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-2xl"
+            <div className="flex gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-2xl items-center"
                 style={{ background: 'var(--color-surface)', backdropFilter: 'blur(16px)', border: '1px solid var(--color-border)', boxShadow: '0 8px 32px var(--color-card-shadow)' }}>
                 <textarea 
                     rows={1}
@@ -259,7 +259,7 @@ export default function Assistant() {
                     onKeyDown={handleKeyDown}
                     disabled={isTyping}
                     placeholder="Ask about your medications..."
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-transparent outline-none text-sm themed-text focus-visible:outline-2 focus-visible:outline-primary-500 resize-none"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-transparent outline-none text-xs sm:text-sm themed-text focus-visible:outline-2 focus-visible:outline-primary-500 resize-none min-h-[44px]"
                     style={{ color: 'var(--color-text)' }} 
                 />
                 <motion.button 
@@ -267,7 +267,8 @@ export default function Assistant() {
                     disabled={!input.trim() || isTyping} 
                     whileHover={{ scale: 1.05 }} 
                     whileTap={{ scale: 0.9 }}
-                    className="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-3 rounded-xl shadow-btn hover:shadow-btn-hover transition-shadow disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 flex items-center justify-center shrink-0"
+                    className="bg-gradient-to-r from-primary-500 to-primary-600 text-white w-11 h-11 rounded-xl shadow-btn hover:shadow-btn-hover transition-shadow disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 flex items-center justify-center shrink-0 min-w-[44px] min-h-[44px]"
+                    aria-label="Send message"
                 >
                     <Send size={18} />
                 </motion.button>

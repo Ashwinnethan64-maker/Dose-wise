@@ -59,46 +59,46 @@ export default function Profile() {
             <SectionHeader title="Profile Settings" subtitle="Manage your account preferences" icon={<User size={24} />} />
 
             {/* Avatar Card */}
-            <GlassCard padding="p-5 sm:p-6">
-                <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
+            <GlassCard padding="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                     <div className="relative shrink-0 group">
-                        <div className="w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary-300 shadow-md flex items-center justify-center"
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-primary-300 shadow-md flex items-center justify-center"
                             style={{ background: 'var(--color-badge-bg)' }}>
                             {(profile.avatar || user?.avatar) ? (
                                 <img src={profile.avatar || user?.avatar} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
-                                <User size={64} className="text-primary-500" />
+                                <User size={48} className="text-primary-500 sm:w-16 sm:h-16" />
                             )}
                         </div>
-                        {/* Hover Overlay with clean badge buttons */}
+                        {/* Hover / Tap Overlay with clean badge buttons */}
                         <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center gap-3 backdrop-blur-[2px]">
                             <button
                                 onClick={() => fileInputRef.current?.click()}
-                                className="w-11 h-11 bg-white text-primary-600 rounded-xl hover:bg-primary-50 transition-transform active:scale-95 shadow-md flex items-center justify-center shrink-0"
+                                className="w-10 h-10 sm:w-11 sm:h-11 bg-white text-primary-600 rounded-xl hover:bg-primary-50 transition-transform active:scale-95 shadow-md flex items-center justify-center shrink-0 min-w-[40px]"
                                 title="Upload photo"
                                 aria-label="Upload avatar"
                             >
-                                <Camera size={22} />
+                                <Camera size={20} className="sm:w-[22px] sm:h-[22px]" />
                             </button>
                             {profile.avatar && (
                                 <button
                                     onClick={handleRemoveAvatar}
-                                    className="w-11 h-11 bg-white text-medical-danger rounded-xl hover:bg-red-50 transition-transform active:scale-95 shadow-md flex items-center justify-center shrink-0"
+                                    className="w-10 h-10 sm:w-11 sm:h-11 bg-white text-medical-danger rounded-xl hover:bg-red-50 transition-transform active:scale-95 shadow-md flex items-center justify-center shrink-0 min-w-[40px]"
                                     title="Remove photo"
                                     aria-label="Remove avatar"
                                 >
-                                    <Trash2 size={22} />
+                                    <Trash2 size={20} className="sm:w-[22px] sm:h-[22px]" />
                                 </button>
                             )}
                         </div>
                         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
                     </div>
-                    <div className="flex-1 text-center sm:text-left">
-                        <h3 className="text-lg font-bold themed-text">{displayName || user?.name || 'User'}</h3>
-                        <p className="text-sm themed-text-muted opacity-75 mt-0.5">{user?.email || 'user@example.com'}</p>
+                    <div className="flex-1 text-center sm:text-left min-w-0">
+                        <h3 className="text-base sm:text-lg font-bold themed-text truncate">{displayName || user?.name || 'User'}</h3>
+                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mt-0.5 truncate">{user?.email || 'user@example.com'}</p>
                         {user?.provider === 'google' && <GoogleBadge />}
                         {user?.provider === 'email' && (
-                            <span className="inline-flex items-center gap-1 mt-2.5 text-[11px] font-semibold px-3 py-1 rounded-full"
+                            <span className="inline-flex items-center gap-1 mt-2 sm:mt-2.5 text-[11px] font-semibold px-3 py-1 rounded-full"
                                 style={{ background: 'var(--color-badge-bg)', color: 'var(--color-text)' }}>
                                 ✉️ Email Account
                             </span>
@@ -108,8 +108,8 @@ export default function Profile() {
             </GlassCard>
 
             {/* Personal Info */}
-            <GlassCard padding="p-5 sm:p-6">
-                <h3 className="text-base sm:text-lg font-bold themed-text mb-4 sm:mb-5 flex items-center gap-2">
+            <GlassCard padding="p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-bold themed-text mb-3.5 sm:mb-5 flex items-center gap-2">
                     Personal Information
                 </h3>
                 <div className="space-y-4 sm:space-y-5">
@@ -117,23 +117,23 @@ export default function Profile() {
                         <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5 sm:mb-2">Display Name</label>
                         <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)}
                             placeholder="Your name..."
-                            className="w-full px-4 py-2.5 sm:py-3 rounded-xl themed-input outline-none text-sm" />
+                            className="w-full px-4 py-2.5 sm:py-3 rounded-xl themed-input outline-none text-sm min-h-[44px]" />
                     </div>
                     <div>
                         <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5 sm:mb-2">Email</label>
                         <input type="email" value={user?.email || ''} disabled
-                            className="w-full px-4 py-2.5 sm:py-3 rounded-xl themed-input outline-none text-sm cursor-not-allowed opacity-60" />
+                            className="w-full px-4 py-2.5 sm:py-3 rounded-xl themed-input outline-none text-sm cursor-not-allowed opacity-60 min-h-[44px]" />
                         <p className="text-xs themed-text-muted mt-1.5 opacity-60">Email cannot be changed</p>
                     </div>
                 </div>
             </GlassCard>
 
             {/* Preferences */}
-            <GlassCard padding="p-5 sm:p-6">
-                <h3 className="text-base sm:text-lg font-bold themed-text mb-4 sm:mb-5">Preferences</h3>
+            <GlassCard padding="p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-bold themed-text mb-3.5 sm:mb-5">Preferences</h3>
                 <div className="space-y-3 sm:space-y-4">
                     {/* Theme Toggle */}
-                    <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl themed-pref-row gap-4">
+                    <div className="flex items-center justify-between p-3.5 sm:p-5 rounded-2xl themed-pref-row gap-3 sm:gap-4">
                         <div className="flex items-center gap-3 min-w-0">
                             {isDark ? <Moon size={20} className="text-primary-500 shrink-0" /> : <Sun size={20} className="text-primary-500 shrink-0" />}
                             <div className="min-w-0">
@@ -151,7 +151,7 @@ export default function Profile() {
                     </div>
 
                     {/* Notifications Toggle */}
-                    <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl themed-pref-row gap-4">
+                    <div className="flex items-center justify-between p-3.5 sm:p-5 rounded-2xl themed-pref-row gap-3 sm:gap-4">
                         <div className="flex items-center gap-3 min-w-0">
                             {notificationsEnabled ? <Bell size={20} className="text-primary-500 shrink-0" /> : <BellOff size={20} className="themed-text-muted shrink-0" />}
                             <div className="min-w-0">
@@ -175,8 +175,8 @@ export default function Profile() {
             </GlassCard>
 
             {/* Save */}
-            <div className="flex justify-end pt-2">
-                <PrimaryButton onClick={handleSave} icon={<Save size={16} />} size="md">
+            <div className="flex justify-center sm:justify-end pt-2">
+                <PrimaryButton onClick={handleSave} icon={<Save size={16} />} size="md" className="w-full sm:w-auto">
                     Save Changes
                 </PrimaryButton>
             </div>

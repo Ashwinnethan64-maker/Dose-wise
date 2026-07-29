@@ -20,7 +20,7 @@ export default function MedicationCard({ med, onEdit, onDelete, interactions = [
     return (
         <motion.div
             whileHover={{ y: -2, scale: 1.005 }}
-            className={`rounded-2xl border p-4 sm:p-5 transition-all duration-250 ${hasCritical ? 'border-red-200/80' : ''}`}
+            className={`rounded-2xl border p-3.5 sm:p-5 transition-all duration-250 ${hasCritical ? 'border-red-200/80' : ''}`}
             style={{
                 background: 'var(--color-surface)',
                 backdropFilter: 'blur(12px)',
@@ -29,16 +29,16 @@ export default function MedicationCard({ med, onEdit, onDelete, interactions = [
                 willChange: 'transform',
             }}
         >
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
                 {med.image && (med.fileType?.startsWith('image/') || med.image.startsWith('data:image/')) ? (
                     <img
                         src={med.image}
                         alt={med.name}
-                        className="w-14 h-14 rounded-xl object-cover shrink-0 border border-primary-200/50 shadow-sm"
+                        className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl object-cover shrink-0 border border-primary-200/50 shadow-sm"
                     />
                 ) : (
                     <div
-                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center text-xl shrink-0 ${pill.bg} ${pill.border}`}
+                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 flex items-center justify-center text-lg sm:text-xl shrink-0 ${pill.bg} ${pill.border}`}
                         style={{ boxShadow: `0 0 12px ${pill.glow}` }}
                     >
                         💊
@@ -47,24 +47,24 @@ export default function MedicationCard({ med, onEdit, onDelete, interactions = [
 
                 <div className="flex-1 min-w-0">
                     <h3 className="text-sm sm:text-base font-bold themed-text truncate">{med.name}</h3>
-                    <p className="text-xs sm:text-sm themed-text-muted mt-0.5 opacity-75">{med.dosage}</p>
-                    <div className="flex flex-wrap gap-2 mt-2.5">
+                    <p className="text-xs sm:text-sm themed-text-muted mt-0.5 opacity-75 truncate">{med.dosage}</p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                         {med.schedule && (
-                            <span className="flex items-center gap-1 text-xs bg-primary-50/80 text-primary-700 px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-                                <Clock size={12} /> {med.schedule}
+                            <span className="flex items-center gap-1 text-[11px] sm:text-xs bg-primary-50/80 text-primary-700 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-medium backdrop-blur-sm">
+                                <Clock size={11} className="shrink-0" /> {med.schedule}
                             </span>
                         )}
                         {med.frequency && (
-                            <span className="flex items-center gap-1 text-xs bg-blue-50/80 text-blue-700 px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-                                <Repeat size={12} /> {med.frequency}
+                            <span className="flex items-center gap-1 text-[11px] sm:text-xs bg-blue-50/80 text-blue-700 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-medium backdrop-blur-sm">
+                                <Repeat size={11} className="shrink-0" /> {med.frequency}
                             </span>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                    <IconButton icon={<Pencil size={17} />} onClick={() => onEdit?.(med)} label="Edit" variant="default" />
-                    <IconButton icon={<Trash2 size={17} />} onClick={() => onDelete?.(med.id)} label="Delete" variant="danger" />
+                <div className="flex items-center gap-1 shrink-0">
+                    <IconButton icon={<Pencil size={16} />} onClick={() => onEdit?.(med)} label="Edit" variant="default" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center" />
+                    <IconButton icon={<Trash2 size={16} />} onClick={() => onDelete?.(med.id)} label="Delete" variant="danger" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center" />
                 </div>
             </div>
 

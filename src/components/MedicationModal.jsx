@@ -103,7 +103,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
             <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="absolute inset-0"
@@ -115,34 +115,34 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: 8 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                className="relative w-full max-w-md rounded-2xl border max-h-[90vh] flex flex-col themed-modal shadow-xl overflow-hidden"
+                className="relative w-full max-w-md rounded-2xl border max-h-[85dvh] sm:max-h-[90vh] flex flex-col themed-modal shadow-xl overflow-hidden"
             >
                 {/* Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b shrink-0" style={{ borderColor: 'var(--color-border)' }}>
+                <div className="px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between border-b shrink-0" style={{ borderColor: 'var(--color-border)' }}>
                     <h2 className="text-base font-bold themed-text">{isEditing ? 'Edit Medication' : 'Add Medication'}</h2>
                     <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }}
                         onClick={onClose}
-                        className="p-1.5 rounded-lg themed-text-muted hover:themed-text transition-colors"
+                        className="w-10 h-10 rounded-lg themed-text-muted hover:themed-text transition-colors flex items-center justify-center min-w-[40px] shrink-0"
                         aria-label="Close modal">
-                        <X size={16} />
+                        <X size={18} />
                     </motion.button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1 overflow-hidden">
                     {/* Scrollable Form Body */}
-                    <div className="p-6 space-y-4 overflow-y-auto flex-1">
+                    <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
                         {/* File Upload */}
                         <div>
-                            <label className="block text-sm font-semibold themed-text mb-1.5">Photo or Document (Optional)</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Photo or Document (Optional)</label>
                             {form.image ? (
                                 <div className="relative rounded-xl overflow-hidden border group" style={{ borderColor: 'var(--color-border)' }}>
                                     {isImage ? (
-                                        <img src={form.image} alt="Medication" className="w-full h-36 object-cover" />
+                                        <img src={form.image} alt="Medication" className="w-full h-32 sm:h-36 object-cover" />
                                     ) : (
-                                        <div className="w-full h-36 flex flex-col items-center justify-center gap-2 themed-text"
+                                        <div className="w-full h-32 sm:h-36 flex flex-col items-center justify-center gap-2 themed-text"
                                             style={{ background: 'var(--color-pref-row)' }}>
-                                            <div className="w-14 h-14 rounded-2xl bg-primary-100 flex items-center justify-center text-primary-600">
-                                                {form.fileType?.includes('pdf') ? <FileText size={28} /> : <FileIcon size={28} />}
+                                            <div className="w-12 h-12 rounded-2xl bg-primary-100 flex items-center justify-center text-primary-600">
+                                                {form.fileType?.includes('pdf') ? <FileText size={24} /> : <FileIcon size={24} />}
                                             </div>
                                             <p className="px-4 text-[13px] font-bold text-center truncate w-full">{form.fileName || 'Document'}</p>
                                             <p className="text-[10px] themed-text-muted uppercase tracking-wider font-bold">{(form.fileType?.split('/')[1] || 'File')}</p>
@@ -150,12 +150,12 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                     )}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                         <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={() => fileInputRef.current?.click()}
-                                            className="px-3 py-2 bg-white/95 rounded-xl hover:bg-white transition-colors flex items-center gap-2 text-xs font-bold text-primary-600 shadow-lg">
+                                            className="px-3 py-2 bg-white/95 rounded-xl hover:bg-white transition-colors flex items-center gap-2 text-xs font-bold text-primary-600 shadow-lg min-h-[40px]">
                                             <Camera size={14} />
                                             CHANGE FILE
                                         </motion.button>
                                         <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={handleRemoveFile}
-                                            className="p-2 bg-red-500 rounded-xl hover:bg-red-600 transition-colors shadow-lg" title="Remove file">
+                                            className="p-2.5 bg-red-500 rounded-xl hover:bg-red-600 transition-colors shadow-lg min-h-[40px] min-w-[40px] flex items-center justify-center" title="Remove file">
                                             <Trash2 size={18} className="text-white" />
                                         </motion.button>
                                     </div>
@@ -163,9 +163,9 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                             ) : (
                                 <motion.button type="button" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-full h-28 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 transition-colors themed-text-muted"
+                                    className="w-full h-24 sm:h-28 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 transition-colors themed-text-muted min-h-[44px]"
                                     style={{ borderColor: 'var(--color-border-input)', background: 'var(--color-input-bg)' }}>
-                                    <Camera size={24} className="text-primary-500" />
+                                    <Camera size={22} className="text-primary-500" />
                                     <span className="text-xs font-bold">Tap to upload Photo / PDF / DOC</span>
                                 </motion.button>
                             )}
@@ -189,7 +189,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                         whileHover={{ scale: 1.12 }}
                                         whileTap={{ scale: 0.9 }}
                                         onClick={() => setForm({ ...form, color: c.name })}
-                                        className={`w-8 h-8 rounded-full relative transition-all duration-200
+                                        className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full relative transition-all duration-200
                         ${form.color === c.name ? `ring-2 ring-offset-2 ${c.ring}` : 'ring-1 ring-black/10 hover:ring-2 hover:ring-primary-300'}`}
                                         style={{
                                             backgroundColor: c.hex,
@@ -204,7 +204,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                                 animate={{ scale: 1 }}
                                                 className="absolute inset-0 flex items-center justify-center"
                                             >
-                                                <Check size={13} className={c.name === 'white' || c.name === 'yellow' ? 'text-gray-700' : 'text-white'} strokeWidth={3} />
+                                                <Check size={14} className={c.name === 'white' || c.name === 'yellow' ? 'text-gray-700' : 'text-white'} strokeWidth={3} />
                                             </motion.div>
                                         )}
                                     </motion.button>
@@ -217,7 +217,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                             <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Medication Name *</label>
                             <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 placeholder="e.g. Metformin" required
-                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm" />
+                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]" />
                         </div>
 
                         {/* Dosage */}
@@ -225,14 +225,14 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                             <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Dosage *</label>
                             <input type="text" value={form.dosage} onChange={(e) => setForm({ ...form, dosage: e.target.value })}
                                 placeholder="e.g. 500mg" required
-                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm" />
+                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]" />
                         </div>
 
                         {/* Frequency */}
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Frequency</label>
                             <select value={form.frequency} onChange={(e) => setForm({ ...form, frequency: e.target.value })}
-                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm">
+                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]">
                                 <option>Once daily</option><option>Twice daily</option><option>Three times</option><option>As needed</option>
                             </select>
                         </div>
@@ -241,7 +241,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider themed-text-muted mb-1.5">Schedule</label>
                             <select value={form.schedule} onChange={(e) => setForm({ ...form, schedule: e.target.value })}
-                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm">
+                                className="w-full px-4 py-2.5 rounded-xl themed-input outline-none text-sm min-h-[44px]">
                                 <option>Morning</option><option>Afternoon</option><option>Evening</option><option>Bedtime</option>
                             </select>
                         </div>
@@ -256,7 +256,7 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                                     value={form.notes}
                                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
                                     placeholder="Optional notes..."
-                                    className="w-full px-4 py-2.5 outline-none text-sm min-h-[120px] resize-none leading-relaxed bg-transparent border-0 focus:ring-0"
+                                    className="w-full px-4 py-2.5 outline-none text-sm min-h-[100px] resize-none leading-relaxed bg-transparent border-0 focus:ring-0"
                                     style={{
                                         whiteSpace: 'pre-wrap',
                                         wordBreak: 'break-word',
@@ -272,13 +272,13 @@ export default function MedicationModal({ isOpen, onClose, onSave, medication = 
                     </div>
 
                     {/* Sticky Footer */}
-                    <div className="p-4 border-t flex gap-3 shrink-0" style={{ borderColor: 'var(--color-border)', background: 'var(--color-modal)' }}>
+                    <div className="p-3.5 sm:p-4 border-t flex gap-3 shrink-0" style={{ borderColor: 'var(--color-border)', background: 'var(--color-modal)' }}>
                         <motion.button type="button" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
                             onClick={onClose}
-                            className="flex-1 py-2.5 rounded-xl font-semibold text-sm themed-text themed-pref-row transition-colors border border-gray-200/50">
+                            className="flex-1 py-3 sm:py-2.5 rounded-xl font-semibold text-sm themed-text themed-pref-row transition-colors border border-gray-200/50 min-h-[44px] flex items-center justify-center">
                             Cancel
                         </motion.button>
-                        <PrimaryButton type="submit" size="md" className="flex-1">
+                        <PrimaryButton type="submit" size="md" className="flex-1 min-h-[44px] flex items-center justify-center">
                             {isEditing ? 'Save Changes' : 'Add Medication'}
                         </PrimaryButton>
                     </div>

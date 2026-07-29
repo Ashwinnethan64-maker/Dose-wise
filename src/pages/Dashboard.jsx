@@ -42,12 +42,12 @@ export default function Dashboard() {
             </div>
 
             {/* Quick Action Cards — equal height grid */}
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
                 {/* Adherence Ring */}
                 <StaggerItem className="h-full">
-                    <GlassCard hover glow padding="p-5 sm:p-6" className="flex flex-col items-center justify-between cursor-pointer h-full min-h-[170px]" onClick={() => navigate('/adherence')}>
-                        <AdherenceRing percentage={adherencePercentage} size={92} label="Adherence" />
-                        <p className="text-xs themed-text-muted mt-3 font-semibold uppercase tracking-wider">Overall Score</p>
+                    <GlassCard hover glow padding="p-4 sm:p-6" className="flex flex-col items-center justify-between cursor-pointer h-full min-h-[150px] sm:min-h-[170px]" onClick={() => navigate('/adherence')}>
+                        <AdherenceRing percentage={adherencePercentage} size={88} label="Adherence" />
+                        <p className="text-[11px] sm:text-xs themed-text-muted mt-2.5 sm:mt-3 font-semibold uppercase tracking-wider">Overall Score</p>
                     </GlassCard>
                 </StaggerItem>
 
@@ -57,30 +57,30 @@ export default function Dashboard() {
                         onClick={() => navigate('/scan')}
                         whileHover={{ y: -2, scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full h-full min-h-[170px] bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600 rounded-2xl shadow-btn hover:shadow-btn-hover p-5 sm:p-6 text-white text-left transition-all duration-250 relative overflow-hidden flex flex-col justify-between items-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
+                        className="w-full h-full min-h-[150px] sm:min-h-[170px] bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600 rounded-2xl shadow-btn hover:shadow-btn-hover p-4 sm:p-6 text-white text-left transition-all duration-250 relative overflow-hidden flex flex-col justify-between items-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
                     >
                         {/* Pulse ring */}
-                        <div className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-white/30 animate-ping" />
-                        <div className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-white/70" />
-                        <ScanLine size={38} className="opacity-90" />
+                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 w-2.5 h-2.5 rounded-full bg-white/30 animate-ping" />
+                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 w-2.5 h-2.5 rounded-full bg-white/70" />
+                        <ScanLine size={34} className="opacity-90 sm:w-[38px] sm:h-[38px]" />
                         <div>
                             <h3 className="text-base font-bold flex items-center gap-1.5">
                                 Scan Pill <Sparkles size={14} className="opacity-80" />
                             </h3>
-                            <p className="text-xs opacity-80 mt-1">Identify with AI camera</p>
+                            <p className="text-xs opacity-80 mt-0.5 sm:mt-1">Identify with AI camera</p>
                         </div>
                     </motion.button>
                 </StaggerItem>
 
                 {/* Pending Meds */}
                 <StaggerItem className="h-full">
-                    <MetricCard icon={<Pill size={22} />} value={pendingCount} label="Pending Today" color="teal" onClick={() => navigate('/adherence')} className="h-full min-h-[170px] flex flex-col justify-between p-5 sm:p-6" />
+                    <MetricCard icon={<Pill size={22} />} value={pendingCount} label="Pending Today" color="teal" onClick={() => navigate('/adherence')} className="h-full min-h-[150px] sm:min-h-[170px] flex flex-col justify-between p-4 sm:p-6" />
                 </StaggerItem>
 
                 {/* Missed Alerts */}
                 <StaggerItem className="h-full">
                     <MetricCard icon={<AlertTriangle size={22} />} value={missedToday.length} label="Missed Today"
-                        color={missedToday.length > 0 ? 'red' : 'teal'} onClick={() => navigate('/adherence')} className="h-full min-h-[170px] flex flex-col justify-between p-5 sm:p-6" />
+                        color={missedToday.length > 0 ? 'red' : 'teal'} onClick={() => navigate('/adherence')} className="h-full min-h-[150px] sm:min-h-[170px] flex flex-col justify-between p-4 sm:p-6" />
                 </StaggerItem>
             </StaggerContainer>
 
@@ -91,44 +91,44 @@ export default function Dashboard() {
                     icon={<Pill size={22} />}
                     action={
                         <motion.button whileHover={{ x: 3 }} onClick={() => navigate('/medications')}
-                            className="text-sm text-primary-500 hover:text-primary-700 font-semibold transition-colors flex items-center gap-1.5">
+                            className="text-sm text-primary-500 hover:text-primary-700 font-semibold transition-colors flex items-center gap-1.5 min-h-[44px] px-2">
                             View All <ArrowRight size={15} />
                         </motion.button>
                     }
-                    className="mb-4"
+                    className="mb-3.5 sm:mb-4"
                 />
 
                 {todayMeds.length === 0 ? (
-                    <GlassCard className="text-center py-10 sm:py-12 px-6 flex flex-col items-center justify-center">
+                    <GlassCard className="text-center py-8 sm:py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
                         <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
-                            <Pill size={42} className="text-primary-300 mx-auto mb-3" />
+                            <Pill size={38} className="text-primary-300 mx-auto mb-3" />
                         </motion.div>
                         <p className="text-sm sm:text-base themed-text-muted mb-1 font-semibold">No medications added yet</p>
                         <p className="text-xs sm:text-sm themed-text-muted opacity-75 mb-5">Start by adding your first medication</p>
                         <motion.button whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.97 }}
                             onClick={() => navigate('/medications')}
-                            className="bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold text-xs sm:text-sm py-2.5 px-5 rounded-xl transition-colors">
+                            className="bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold text-xs sm:text-sm py-3 px-5 rounded-xl transition-colors min-h-[44px] flex items-center justify-center">
                             ➕ Add Your First Medication
                         </motion.button>
                     </GlassCard>
                 ) : (
-                    <StaggerContainer className="space-y-3">
+                    <StaggerContainer className="space-y-2.5 sm:space-y-3">
                         {todayMeds.map((med) => (
                             <StaggerItem key={med.id}>
                                 <GlassCard
                                     hover
-                                    padding="p-4 sm:p-5"
-                                    className={`flex items-center gap-4 ${med.status === 'taken' ? '!border-green-200/60' :
+                                    padding="p-3.5 sm:p-5"
+                                    className={`flex items-center gap-3 sm:gap-4 ${med.status === 'taken' ? '!border-green-200/60' :
                                         med.status === 'skipped' ? '!border-orange-200/60' : ''
                                         }`}
                                 >
-                                    <div className="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0"
+                                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-base sm:text-lg shrink-0"
                                         style={{ background: 'var(--color-badge-bg)' }}>
                                         💊
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm sm:text-base font-bold themed-text truncate">{med.name}</p>
-                                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mt-0.5">{med.dosage} · {med.schedule}</p>
+                                        <p className="text-xs sm:text-sm themed-text-muted opacity-75 mt-0.5 truncate">{med.dosage} · {med.schedule}</p>
                                     </div>
                                     <StatusBadge status={med.status || 'pending'} />
                                 </GlassCard>
@@ -140,19 +140,19 @@ export default function Dashboard() {
 
             {/* Weekly Overview */}
             <div>
-                <SectionHeader title="Weekly Overview" icon={<Calendar size={26} />} className="mb-4" />
-                <GlassCard padding="p-6 sm:p-7">
-                    <div className="grid grid-cols-7 gap-2.5 sm:gap-4 min-w-[280px]">
+                <SectionHeader title="Weekly Overview" icon={<Calendar size={22} className="sm:w-[26px] sm:h-[26px]" />} className="mb-3.5 sm:mb-4" />
+                <GlassCard padding="p-4 sm:p-7" className="overflow-x-auto">
+                    <div className="grid grid-cols-7 gap-1.5 sm:gap-4 min-w-[280px]">
                         {weeklyData.map((day) => {
                             const total = day.taken + day.skipped;
                             const pct = total > 0 ? Math.round((day.taken / total) * 100) : -1;
                             const isToday = day.date === new Date().toISOString().split('T')[0];
                             return (
                                 <motion.div key={day.date} whileHover={{ scale: 1.08 }} className="text-center flex flex-col items-center">
-                                    <p className={`text-xs sm:text-sm font-bold mb-2.5 ${isToday ? 'text-primary-500' : 'themed-text-muted'}`}>
+                                    <p className={`text-[11px] sm:text-sm font-bold mb-1.5 sm:mb-2.5 ${isToday ? 'text-primary-500' : 'themed-text-muted'}`}>
                                         {day.dayName}
                                     </p>
-                                    <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-xs sm:text-sm font-bold transition-all shadow-sm ${isToday ? 'ring-2 ring-primary-400 ring-offset-2' : ''
+                                    <div className={`w-9 h-9 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-[11px] sm:text-sm font-bold transition-all shadow-sm ${isToday ? 'ring-2 ring-primary-400 ring-offset-1 sm:ring-offset-2' : ''
                                         } ${pct < 0 ? 'bg-gray-100 text-gray-400' :
                                             pct >= 80 ? 'bg-green-100 text-green-700' :
                                                 pct >= 50 ? 'bg-amber-100 text-amber-700' :

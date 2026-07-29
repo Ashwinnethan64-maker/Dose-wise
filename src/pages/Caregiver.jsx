@@ -58,31 +58,31 @@ export default function Caregiver() {
                 <p className="text-sm sm:text-base themed-text-muted mt-1 font-medium">Monitor medication adherence and missed doses</p>
             </div>
 
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6">
                 <StaggerItem className="h-full">
-                    <GlassCard glow padding="p-6 sm:p-7" className="flex flex-col items-center justify-center h-full text-center min-h-[200px]">
-                        <AdherenceRing percentage={adherencePercentage} size={100} label="Overall" />
-                        <div className="flex items-center gap-1.5 mt-3.5">
-                            <p className="text-xs themed-text-muted font-semibold uppercase tracking-wider">Adherence Rate</p>
+                    <GlassCard glow padding="p-5 sm:p-7" className="flex flex-col items-center justify-center h-full text-center min-h-[170px] sm:min-h-[200px]">
+                        <AdherenceRing percentage={adherencePercentage} size={92} label="Overall" />
+                        <div className="flex items-center gap-1.5 mt-3">
+                            <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider">Adherence Rate</p>
                             <TrendIcon size={14} className={trendColor} />
                         </div>
                     </GlassCard>
                 </StaggerItem>
 
                 <StaggerItem className="h-full">
-                    <GlassCard glow padding="p-6 sm:p-7" className={`flex flex-col items-center justify-center h-full text-center min-h-[200px] ${missedToday.length > 0 ? '!border-red-200/60' : ''}`}>
-                        <div className={`w-10 h-10 rounded-xl mx-auto mb-3 flex items-center justify-center ${missedToday.length > 0 ? 'bg-rose-100/90 dark:bg-rose-950/70 border border-rose-300/70 dark:border-rose-500/50' : 'bg-teal-100/80 dark:bg-teal-900/60 border border-teal-300/60 dark:border-teal-500/50'}`}>
+                    <GlassCard glow padding="p-5 sm:p-7" className={`flex flex-col items-center justify-center h-full text-center min-h-[170px] sm:min-h-[200px] ${missedToday.length > 0 ? '!border-red-200/60' : ''}`}>
+                        <div className={`w-10 h-10 rounded-xl mx-auto mb-2.5 flex items-center justify-center ${missedToday.length > 0 ? 'bg-rose-100/90 dark:bg-rose-950/70 border border-rose-300/70 dark:border-rose-500/50' : 'bg-teal-100/80 dark:bg-teal-900/60 border border-teal-300/60 dark:border-teal-500/50'}`}>
                             <AlertTriangle size={20} className={missedToday.length > 0 ? 'text-rose-600 dark:text-rose-300' : 'text-teal-700 dark:text-teal-200'} />
                         </div>
-                        <motion.p key={animatedMissed} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-bold themed-text">
+                        <motion.p key={animatedMissed} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-2xl sm:text-3xl font-bold themed-text">
                             {animatedMissed}
                         </motion.p>
-                        <p className="text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">Missed Today</p>
+                        <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">Missed Today</p>
                         {missedToday.length > 0 && (
                             <div className="mt-2.5 space-y-1">
                                 {missedToday.map((m) => {
                                     const med = medications.find((md) => md.id === m.medicationId);
-                                    return <span key={m.id} className="block text-xs bg-red-50 text-red-700 border border-red-200 rounded-full px-3 py-0.5 font-medium">{med?.name || 'Unknown'}</span>;
+                                    return <span key={m.id} className="block text-xs bg-red-50 text-red-700 border border-red-200 rounded-full px-3 py-0.5 font-medium truncate">{med?.name || 'Unknown'}</span>;
                                 })}
                             </div>
                         )}
@@ -90,27 +90,27 @@ export default function Caregiver() {
                 </StaggerItem>
 
                 <StaggerItem className="h-full">
-                    <GlassCard glow padding="p-6 sm:p-7" className="flex flex-col items-center justify-center h-full text-center min-h-[200px]">
-                        <div className="w-10 h-10 rounded-xl bg-teal-100/80 dark:bg-teal-900/60 border border-teal-300/60 dark:border-teal-500/50 mx-auto mb-3 flex items-center justify-center shadow-sm">
+                    <GlassCard glow padding="p-5 sm:p-7" className="flex flex-col items-center justify-center h-full text-center min-h-[170px] sm:min-h-[200px]">
+                        <div className="w-10 h-10 rounded-xl bg-teal-100/80 dark:bg-teal-900/60 border border-teal-300/60 dark:border-teal-500/50 mx-auto mb-2.5 flex items-center justify-center shadow-sm">
                             <TrendingUp size={20} className="text-teal-700 dark:text-teal-200" />
                         </div>
-                        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-bold themed-text">{animatedMedCount}</motion.p>
-                        <p className="text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">Medications Tracked</p>
+                        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-2xl sm:text-3xl font-bold themed-text">{animatedMedCount}</motion.p>
+                        <p className="text-[11px] sm:text-xs themed-text-muted font-semibold uppercase tracking-wider mt-1">Medications Tracked</p>
                     </GlassCard>
                 </StaggerItem>
             </StaggerContainer>
 
             <div>
-                <SectionHeader title="Weekly Report Card" icon={<Calendar size={22} />} className="mb-4" />
-                <GlassCard padding="p-5 sm:p-6">
-                    <div className="grid grid-cols-7 gap-2 sm:gap-4">
+                <SectionHeader title="Weekly Report Card" icon={<Calendar size={22} />} className="mb-3.5 sm:mb-4" />
+                <GlassCard padding="p-4 sm:p-6" className="overflow-x-auto">
+                    <div className="grid grid-cols-7 gap-1.5 sm:gap-4 min-w-[280px]">
                         {weeklyData.map((day) => {
                             const total = day.taken + day.skipped;
                             const pct = total > 0 ? Math.round((day.taken / total) * 100) : -1;
                             return (
                                 <motion.div key={day.date} whileHover={{ scale: 1.06 }} className="text-center flex flex-col items-center">
-                                    <p className="text-xs themed-text-muted font-semibold mb-2">{day.dayName}</p>
-                                    <div className={`w-full max-w-[72px] h-14 rounded-xl flex flex-col items-center justify-center border text-xs font-bold ${pct < 0 ? 'bg-gray-50 text-gray-400 border-gray-200' :
+                                    <p className="text-[11px] sm:text-xs themed-text-muted font-semibold mb-1.5 sm:mb-2">{day.dayName}</p>
+                                    <div className={`w-full max-w-[72px] h-12 sm:h-14 rounded-xl flex flex-col items-center justify-center border text-xs font-bold ${pct < 0 ? 'bg-gray-50 text-gray-400 border-gray-200' :
                                             pct >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
                                                 pct >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                                     'bg-red-50 text-red-700 border-red-200'
@@ -126,32 +126,32 @@ export default function Caregiver() {
             </div>
 
             <div>
-                <SectionHeader title="Per-Medication Breakdown" className="mb-4" />
+                <SectionHeader title="Per-Medication Breakdown" className="mb-3.5 sm:mb-4" />
                 {medBreakdown.length === 0 ? (
                     <GlassCard className="text-center py-8">
                         <p className="themed-text-muted">No medications being tracked.</p>
                     </GlassCard>
                 ) : (
-                    <StaggerContainer className="space-y-3">
+                    <StaggerContainer className="space-y-2.5 sm:space-y-3">
                         {medBreakdown.map((med) => (
                             <StaggerItem key={med.id}>
-                                <GlassCard hover padding="p-4 sm:p-5" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                                        <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style={{ background: 'var(--color-badge-bg)' }}>💊</div>
+                                <GlassCard hover padding="p-3.5 sm:p-5" className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
+                                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl shrink-0" style={{ background: 'var(--color-badge-bg)' }}>💊</div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm sm:text-base font-bold themed-text truncate">{med.name}</p>
-                                            <p className="text-xs sm:text-sm themed-text-muted mt-0.5">{med.taken} taken / {med.total} total</p>
+                                            <p className="text-xs sm:text-sm themed-text-muted mt-0.5 truncate">{med.taken} taken / {med.total} total</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
-                                        <div className="w-28 h-2.5 rounded-full bg-gray-100 overflow-hidden relative">
+                                        <div className="w-24 sm:w-28 h-2.5 rounded-full bg-gray-100 overflow-hidden relative">
                                             <motion.div initial={{ width: 0 }} animate={{ width: `${med.percentage}%` }} transition={{ duration: 0.8, ease: 'easeOut' }}
                                                 className={`h-full rounded-full relative ${med.percentage >= 80 ? 'bg-gradient-to-r from-green-400 to-green-500' :
                                                         med.percentage >= 50 ? 'bg-gradient-to-r from-amber-400 to-amber-500' :
                                                             'bg-gradient-to-r from-red-400 to-red-500'
                                                     }`} />
                                         </div>
-                                        <span className={`text-sm font-bold w-12 text-right ${med.percentage >= 80 ? 'text-medical-safe' :
+                                        <span className={`text-xs sm:text-sm font-bold w-10 sm:w-12 text-right ${med.percentage >= 80 ? 'text-medical-safe' :
                                                 med.percentage >= 50 ? 'text-medical-warn' : 'text-medical-danger'
                                             }`}>{med.percentage}%</span>
                                     </div>

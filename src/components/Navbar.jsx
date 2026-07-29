@@ -40,7 +40,7 @@ export default function Navbar() {
     }, []);
 
     const linkClass = ({ isActive }) =>
-        `relative flex items-center gap-2 px-2.5 xl:px-3.5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${isActive
+        `relative flex items-center gap-2.5 px-3.5 py-2.5 sm:py-2 rounded-xl font-semibold text-sm transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${isActive
             ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-btn'
             : 'themed-text-muted hover:bg-primary-50/30 hover:text-primary-500'
         }`;
@@ -52,7 +52,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <NavLink to="/dashboard" className="flex items-center shrink-0 group focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-xl py-1 pr-2">
+                    <NavLink to="/dashboard" className="flex items-center shrink-0 group focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-xl py-1 pr-2 min-h-[44px]">
                         <DoseWiseLogo size="md" />
                     </NavLink>
 
@@ -83,7 +83,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Right side */}
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2.5 shrink-0">
                         <div className="hidden md:flex items-center gap-1.5 text-xs text-medical-safe font-semibold bg-green-50/80 px-2.5 py-1.5 rounded-full border border-green-200/60 backdrop-blur-sm shrink-0">
                             <ShieldCheck size={14} className="shrink-0" />
                             <span>Encrypted</span>
@@ -94,12 +94,12 @@ export default function Navbar() {
                             onClick={toggleTheme}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="p-2 rounded-xl themed-text-muted hover:text-primary-500 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 shrink-0"
+                            className="w-11 h-11 rounded-xl themed-text-muted hover:text-primary-500 transition-colors flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 shrink-0"
                             style={{ background: 'var(--color-pref-row)' }}
                             title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                             aria-label="Toggle color theme"
                         >
-                            {isDark ? <Sun size={22} /> : <Moon size={22} />}
+                            {isDark ? <Sun size={22} className="w-5 h-5" /> : <Moon size={22} className="w-5 h-5" />}
                         </motion.button>
 
                         {/* Profile avatar + dropdown */}
@@ -116,7 +116,7 @@ export default function Navbar() {
                                     {(profile.avatar || user?.avatar) ? (
                                         <img src={profile.avatar || user?.avatar} alt="Avatar text" className="w-full h-full object-cover" />
                                     ) : (
-                                        <User size={24} className="text-primary-500" />
+                                        <User size={22} className="text-primary-500 w-5 h-5" />
                                     )}
                                 </motion.button>
 
@@ -153,41 +153,95 @@ export default function Navbar() {
                         <motion.button
                             whileTap={{ scale: 0.9 }}
                             onClick={() => setMobileOpen(!mobileOpen)}
-                            className="lg:hidden p-2 rounded-xl themed-text-muted hover:text-primary-500 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 shrink-0"
+                            className="lg:hidden w-11 h-11 rounded-xl themed-text-muted hover:text-primary-500 transition-colors flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 shrink-0"
                             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
                         >
-                            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+                            {mobileOpen ? <X size={22} className="w-5.5 h-5.5" /> : <Menu size={22} className="w-5.5 h-5.5" />}
                         </motion.button>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile menu */}
+            {/* Full-Screen Mobile Drawer */}
             <AnimatePresence>
                 {mobileOpen && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                        className="lg:hidden border-t overflow-hidden themed-navbar"
-                        style={{ borderColor: 'var(--color-border)' }}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        className="fixed inset-0 z-[100] lg:hidden flex flex-col min-h-screen w-screen overflow-hidden"
+                        style={{
+                            background: 'var(--color-bg)',
+                            color: 'var(--color-text)',
+                        }}
                     >
-                        <div className="px-4 py-3 space-y-1">
+                        {/* Safe Top Bar */}
+                        <div className="px-4 py-4 flex items-center justify-between border-b shrink-0"
+                            style={{
+                                borderColor: 'var(--color-border)',
+                                paddingTop: 'max(1rem, env(safe-area-inset-top))',
+                                background: 'var(--color-surface-solid)',
+                            }}
+                        >
+                            <NavLink to="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center shrink-0">
+                                <DoseWiseLogo size="md" />
+                            </NavLink>
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setMobileOpen(false)}
+                                className="w-11 h-11 rounded-xl themed-text-muted hover:themed-text transition-colors flex items-center justify-center border shrink-0"
+                                style={{ borderColor: 'var(--color-border)', background: 'var(--color-badge-bg)' }}
+                                aria-label="Close navigation menu"
+                            >
+                                <X size={22} />
+                            </motion.button>
+                        </div>
+
+                        {/* Navigation Body */}
+                        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-1.5" style={{ background: 'var(--color-bg)' }}>
+                            <p className="text-[11px] font-bold uppercase tracking-wider themed-text-muted mb-3 px-2">Menu</p>
                             {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-                                <NavLink key={to} to={to} end={to === '/dashboard'} className={linkClass} onClick={() => setMobileOpen(false)}>
-                                    <Icon size={17} /><span className="text-sm">{label}</span>
+                                <NavLink key={to} to={to} end={to === '/dashboard'} className={({ isActive }) =>
+                                    `flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-base transition-all duration-200 ${isActive
+                                        ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-btn'
+                                        : 'themed-text hover:bg-primary-50/20'
+                                    }`} onClick={() => setMobileOpen(false)}>
+                                    <Icon size={22} className="shrink-0" />
+                                    <span>{label}</span>
                                 </NavLink>
                             ))}
-                            <NavLink to="/profile" className={linkClass} onClick={() => setMobileOpen(false)}>
-                                <Settings size={17} /><span className="text-sm">Profile Settings</span>
+                        </div>
+
+                        {/* Footer Settings & Logout */}
+                        <div className="px-4 py-4 border-t space-y-2.5 shrink-0"
+                            style={{
+                                borderColor: 'var(--color-border)',
+                                paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
+                                background: 'var(--color-surface-solid)',
+                            }}
+                        >
+                            <NavLink to="/profile" className="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-semibold text-sm themed-text themed-pref-row" onClick={() => setMobileOpen(false)}>
+                                <Settings size={20} className="shrink-0 text-primary-500" />
+                                <span>Profile Settings</span>
                             </NavLink>
-                            {/* Mobile theme toggle */}
-                            <button onClick={toggleTheme}
-                                className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl font-semibold text-sm themed-text-muted hover:text-primary-500 hover:bg-primary-50/30 transition-all">
-                                {isDark ? <Sun size={17} /> : <Moon size={17} />}
-                                <span className="text-sm">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+
+                            <button onClick={() => { toggleTheme(); setMobileOpen(false); }}
+                                className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl font-semibold text-sm themed-text themed-pref-row">
+                                <div className="flex items-center gap-3.5">
+                                    {isDark ? <Sun size={20} className="text-amber-400 shrink-0" /> : <Moon size={20} className="text-primary-500 shrink-0" />}
+                                    <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+                                </div>
+                                <span className="text-xs themed-text-muted">Switch Theme</span>
                             </button>
+
+                            {user && (
+                                <button onClick={handleLogout}
+                                    className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-semibold text-sm text-medical-danger hover:bg-red-50/20 transition-colors">
+                                    <LogOut size={20} className="shrink-0" />
+                                    <span>Logout</span>
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 )}

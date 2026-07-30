@@ -1,13 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Send, Bot, Sparkles, AlertCircle, Plus, Trash2, Edit3, 
     MessageSquare, Mic, MicOff, PanelLeft, PanelLeftClose, 
-    Copy, Check, RotateCcw, X, Globe, ChevronDown
+    Copy, Check, RotateCcw, X, Globe, ChevronDown, ShieldCheck
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import AnimatedPage from '../components/ui/AnimatedPage';
 import { sendMessageToGLM } from '../ai/chatService';
+import { isMedicalQuery, getRefusalMessage } from '../ai/medicalFilter';
 import { useLanguage } from '../context/LanguageContext';
 
 const STORAGE_KEY = 'dosewise_chat_sessions_v4';
@@ -103,7 +104,7 @@ function ChatBubble({ message, sender, timestamp, isError, onRegenerate }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className={`flex gap-2.5 sm:gap-3 items-start my-2.5 sm:my-3 ${isUser ? 'flex-row-reverse' : ''}`}
+            className={`flex gap-2.5 sm:gap-3 items-start my-3 sm:my-4 ${isUser ? 'flex-row-reverse' : ''}`}
         >
             {/* Avatar */}
             <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold shadow-sm ${
@@ -117,9 +118,9 @@ function ChatBubble({ message, sender, timestamp, isError, onRegenerate }) {
             </div>
 
             {/* Bubble Content */}
-            <div className={`flex flex-col group max-w-[88%] sm:max-w-[78%] ${isUser ? 'items-end' : 'items-start'}`}>
+            <div className={`flex flex-col group max-w-[88%] sm:max-w-[78%] min-w-0 ${isUser ? 'items-end' : 'items-start'}`}>
                 <div
-                    className={`text-xs sm:text-sm leading-relaxed px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl ${
+                    className={`text-xs sm:text-sm leading-relaxed px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl break-words overflow-wrap-anywhere ${
                         isUser
                             ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-btn rounded-tr-xs'
                             : isError
@@ -130,7 +131,9 @@ function ChatBubble({ message, sender, timestamp, isError, onRegenerate }) {
                         background: 'var(--color-surface)',
                         border: '1px solid var(--color-border)',
                         boxShadow: '0 2px 12px var(--color-card-shadow)',
-                    } : {}}
+                        wordBreak: 'break-word',
+                        overflowWrap: 'anywhere',
+                    } : { wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                 >
                     {isUser ? (
                         <p className="whitespace-pre-wrap">{message}</p>
@@ -233,8 +236,11 @@ export default function Assistant() {
     const [isTyping, setIsTyping] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState('');
+    const [userScrolledUp, setUserScrolledUp] = useState(false);
 
     const chatEndRef = useRef(null);
+    const chatScrollRef = useRef(null);
+    const textareaRef = useRef(null);
     const recognitionRef = useRef(null);
     const initialInputRef = useRef('');
     const activeStreamRef = useRef(null);
@@ -257,9 +263,35 @@ export default function Assistant() {
         }
     }, [sessions]);
 
+    // Auto-resize textarea based on content
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, isTyping]);
+        const ta = textareaRef.current;
+        if (!ta) return;
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 112) + 'px'; // max ~7 lines
+    }, [input]);
+
+    // Smart auto-scroll: only scroll if user is near bottom or it's a new user message
+    const scrollToBottom = useCallback((force = false) => {
+        const container = chatScrollRef.current;
+        if (!container) return;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+        if (force || isNearBottom || !userScrolledUp) {
+            chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [userScrolledUp]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, isTyping, scrollToBottom]);
+
+    // Detect when user manually scrolls up
+    const handleChatScroll = useCallback(() => {
+        const container = chatScrollRef.current;
+        if (!container) return;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+        setUserScrolledUp(!isNearBottom);
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -420,6 +452,29 @@ export default function Assistant() {
             setVoiceStatus('');
         }
 
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const userMsg = { sender: 'user', message: rawQuery, timestamp: timeStr };
+
+        updateActiveMessages(prev => [...prev, userMsg]);
+        setInput('');
+        // Reset textarea height after clearing
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+        }
+        // Force scroll to bottom on new user message
+        setUserScrolledUp(false);
+
+        // ── CLIENT-SIDE MEDICAL DOMAIN FILTER ─────────────────────────
+        if (!isMedicalQuery(rawQuery)) {
+            const refusalMsg = getRefusalMessage(selectedLang);
+            updateActiveMessages(prev => [
+                ...prev,
+                { sender: 'ai', message: refusalMsg, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+            ]);
+            return; // No API call made
+        }
+        // ──────────────────────────────────────────────────────────────
+
         let modelQuery = rawQuery;
         if (selectedLang === 'hi') {
             modelQuery = `[Respond strictly in Hindi (हिंदी)]: ${rawQuery}`;
@@ -429,15 +484,10 @@ export default function Assistant() {
             modelQuery = `[Respond strictly in English]: ${rawQuery}`;
         }
 
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const userMsg = { sender: 'user', message: rawQuery, timestamp: timeStr };
-        const currentHistory = [...messages];
-
-        updateActiveMessages(prev => [...prev, userMsg]);
-        setInput('');
+        const currentHistory = [...messages, userMsg];
         setIsTyping(true);
 
-        const aiMsgIndex = currentHistory.length + 1;
+        const aiMsgIndex = currentHistory.length;
 
         try {
             const replyText = await sendMessageToGLM(currentHistory, modelQuery, (chunkText) => {
@@ -556,8 +606,13 @@ export default function Assistant() {
 
             {/* Main Unified Chat App Container */}
             <div 
-                className="glass-card flex flex-col md:flex-row h-[calc(100vh-13.5rem)] min-h-[500px] max-h-[760px] overflow-hidden relative"
-                style={{ background: 'var(--color-surface)' }}
+                className="glass-card flex flex-col md:flex-row overflow-hidden relative"
+                style={{ 
+                    background: 'var(--color-surface)',
+                    height: 'calc(100dvh - 13.5rem)',
+                    minHeight: '480px',
+                    maxHeight: '800px',
+                }}
             >
                 {/* ── Mobile Full-Screen Sidebar Backdrop Overlay ── */}
                 <AnimatePresence>
@@ -707,7 +762,11 @@ export default function Assistant() {
                     </div>
 
                     {/* Chat Messages Feed Container */}
-                    <div className="flex-1 overflow-y-auto px-3 py-3 sm:px-4 sm:py-4 custom-scrollbar">
+                    <div 
+                        ref={chatScrollRef}
+                        onScroll={handleChatScroll}
+                        className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 sm:px-4 sm:py-4 custom-scrollbar"
+                    >
                         <div className="max-w-3xl mx-auto w-full">
                             {messages.map((msg, i) => (
                                 <ChatBubble
@@ -732,14 +791,14 @@ export default function Assistant() {
                     <div className="p-2.5 sm:p-4 border-t shrink-0" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
                         <div className="max-w-3xl mx-auto w-full space-y-2">
                             
-                            {/* Quick Questions Horizontal Scroll Chips */}
-                            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-1 scrollbar-none whitespace-nowrap -mx-1 px-1">
+                            {/* Quick Questions — Wrapping Chips (mobile-friendly) */}
+                            <div className="flex flex-wrap gap-1.5 py-1">
                                 {quickQuestions.map((q) => (
                                     <button
                                         key={q}
                                         disabled={isTyping}
                                         onClick={() => handleSend(q)}
-                                        className="text-[11px] sm:text-xs font-medium px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border text-primary-600 hover:bg-primary-50/50 dark:hover:bg-primary-950/30 transition-colors disabled:opacity-50 shrink-0"
+                                        className="text-[11px] sm:text-xs font-medium px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border text-primary-600 hover:bg-primary-50/50 dark:hover:bg-primary-950/30 transition-colors disabled:opacity-50"
                                         style={{ borderColor: 'var(--color-border-input)', background: 'var(--color-input-bg)' }}
                                     >
                                         {q}
@@ -772,17 +831,19 @@ export default function Assistant() {
 
                             {/* Input Bar */}
                             <div 
-                                className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl border shadow-sm"
+                                className="flex items-end gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl border shadow-sm"
                                 style={{ background: 'var(--color-input-bg)', borderColor: 'var(--color-border-input)' }}
                             >
                                 <textarea
+                                    ref={textareaRef}
                                     rows={1}
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     disabled={isTyping}
                                     placeholder={isListening ? t('listeningShort', { lang: currentLangObj.name }) : t('askPlaceholder')}
-                                    className="flex-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-transparent outline-none text-xs sm:text-sm themed-text resize-none min-h-[36px] sm:min-h-[38px] max-h-28"
+                                    className="flex-1 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-transparent outline-none text-xs sm:text-sm themed-text resize-none min-h-[36px] sm:min-h-[38px] max-h-28 overflow-y-auto leading-relaxed"
+                                    style={{ height: 'auto' }}
                                 />
 
                                 {/* Voice Microphone Icon Button */}
@@ -809,6 +870,14 @@ export default function Assistant() {
                                 >
                                     <Send size={15} />
                                 </button>
+                            </div>
+
+                            {/* Medical Disclaimer Strip */}
+                            <div className="flex items-center justify-center gap-1.5 pt-1">
+                                <ShieldCheck size={11} className="text-primary-500 shrink-0" />
+                                <p className="text-[10px] themed-text-muted text-center leading-tight">
+                                    {t('medicalDisclaimer')}
+                                </p>
                             </div>
                         </div>
                     </div>

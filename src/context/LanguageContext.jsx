@@ -171,6 +171,7 @@ export const TRANSLATIONS = {
         stopVoice: 'Stop',
         copyResponse: 'Copy response',
         regenerateResponse: 'Regenerate response',
+        medicalDisclaimer: 'For educational purposes only. Consult a qualified healthcare professional for medical decisions.',
 
         // Profile Page
         profileTitle: 'Profile Settings',
@@ -391,6 +392,7 @@ export const TRANSLATIONS = {
         stopVoice: 'रोकें',
         copyResponse: 'कॉपी करें',
         regenerateResponse: 'पुनः उत्पन्न करें',
+        medicalDisclaimer: 'यह जानकारी केवल शैक्षिक उद्देश्यों के लिए है। चिकित्सीय निर्णय के लिए किसी योग्य स्वास्थ्य विशेषज्ञ से परामर्श करें।',
 
         // Profile Page
         profileTitle: 'प्रोफ़ाइल सेटिंग्स',
@@ -611,6 +613,7 @@ export const TRANSLATIONS = {
         stopVoice: 'ನಿಲ್ಲಿಸಿ',
         copyResponse: 'ಕಾಪಿ ಮಾಡಿ',
         regenerateResponse: 'ಮತ್ತೆ ತಯಾರಿಸಿ',
+        medicalDisclaimer: 'ಇದು ಕೇವಲ ಶೈಕ್ಷಣಿಕ ಉದ್ದೇಶಕ್ಕಾಗಿ. ವೈದ್ಯಕೀಯ ನಿರ್ಧಾರಗಳಿಗಾಗಿ ಅರ್ಹ ಆರೋಗ್ಯ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.',
 
         // Profile Page
         profileTitle: 'ಪ್ರೊಫೈಲ್ ಸಂಯೋಜನೆಗಳು',
